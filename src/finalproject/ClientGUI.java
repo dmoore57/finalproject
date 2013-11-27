@@ -283,3 +283,4 @@ public class ClientGUI extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane3;
     // End of variables declaration//GEN-END:variables
 }
+//Added by Joe to test committing changes
