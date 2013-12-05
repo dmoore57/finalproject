@@ -155,6 +155,19 @@ public class serverClass {
         try {
             int UPCLookup = (int) input.readInt();
             System.out.println("Recieved UPC:" + UPCLookup);
+            if (UPCLookup == 01234) {
+                output.writeChars("UPC 01234 contains item 1");
+            } else if (UPCLookup == 12345) {
+                output.writeChars("UPC 12345 contains item 2");
+            } else if (UPCLookup == 23456) {
+                output.writeChars("UPC 23456 contains item 3");
+            } else if (UPCLookup == 34567) {
+                output.writeChars("UPC 34567 contains item 4");
+            } else if (UPCLookup == 45678) {
+                output.writeChars("UPC 34567 contains item 5");
+            } else if (UPCLookup == 56789) {
+                output.writeChars("UPC 56789 contains item 6");
+            }
         }
         catch (Exception exception) {
             
