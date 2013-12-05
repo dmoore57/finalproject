@@ -243,6 +243,7 @@ public class ClientGUI extends javax.swing.JFrame {
             UPCCheck = Integer.valueOf((String)UPCComboBox.getSelectedItem());
             connection = new Socket("127.0.0.1", 2000);
             output = new ObjectOutputStream(connection.getOutputStream());
+            output.writeObject("ProcessUPC");
             output.writeInt(UPCCheck);
             output.flush();
             
@@ -250,12 +251,21 @@ public class ClientGUI extends javax.swing.JFrame {
         catch (Exception exception) {
             
         }
-        try {
+        finally {
+            try {
+                output.close();
+                connection.close();
+            }
+            catch (Exception exception) {
+                // exception handling
+            }
+        }
+        /*try {
             //retrieving data from server
         }
         catch (Exception exception) {
             
-        }
+        }*/
     }//GEN-LAST:event_UPCLookupButtonActionPerformed
 
     /**
