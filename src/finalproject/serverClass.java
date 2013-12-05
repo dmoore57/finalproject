@@ -134,6 +134,8 @@ public class serverClass {
             //that will be used for comparison with our defined protocol. (String)
             //will explicitly cast the object into the String type
             requestCommand = (String) input.readObject();
+            //ProcessUPC
+            //switch (command)
         }
         catch(Exception e)
         {
