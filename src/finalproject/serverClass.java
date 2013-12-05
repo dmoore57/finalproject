@@ -151,6 +151,15 @@ public class serverClass {
         }*/
         
     }
+    public void ProcessUPC() {
+        try {
+            int UPCLookup = (int) input.readInt();
+            System.out.println("Recieved UPC:" + UPCLookup);
+        }
+        catch (Exception exception) {
+            
+        }
+    }
     
 }
 
