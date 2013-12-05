@@ -72,7 +72,7 @@
                   <EmptySpace max="-2" attributes="0"/>
                   <Component id="jLabel2" min="-2" max="-2" attributes="0"/>
                   <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                  <Component id="jComboBox1" min="-2" pref="146" max="-2" attributes="0"/>
+                  <Component id="UPCComboBox" min="-2" pref="146" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
                   <Component id="UPCLookupButton" min="-2" max="-2" attributes="0"/>
                   <EmptySpace max="32767" attributes="0"/>
@@ -85,7 +85,7 @@
                   <EmptySpace max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="3" attributes="0">
                       <Component id="jLabel2" alignment="3" min="-2" max="-2" attributes="0"/>
-                      <Component id="jComboBox1" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="UPCComboBox" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="UPCLookupButton" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <EmptySpace max="32767" attributes="0"/>
@@ -99,14 +99,16 @@
             <Property name="text" type="java.lang.String" value="UPC"/>
           </Properties>
         </Component>
-        <Component class="javax.swing.JComboBox" name="jComboBox1">
+        <Component class="javax.swing.JComboBox" name="UPCComboBox">
           <Properties>
             <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
-              <StringArray count="4">
-                <StringItem index="0" value="Item 1"/>
-                <StringItem index="1" value="Item 2"/>
-                <StringItem index="2" value="Item 3"/>
-                <StringItem index="3" value="Item 4"/>
+              <StringArray count="6">
+                <StringItem index="0" value="01234"/>
+                <StringItem index="1" value="12345"/>
+                <StringItem index="2" value="23456"/>
+                <StringItem index="3" value="34567"/>
+                <StringItem index="4" value="45678"/>
+                <StringItem index="5" value="56789"/>
               </StringArray>
             </Property>
           </Properties>
@@ -115,6 +117,9 @@
           <Properties>
             <Property name="text" type="java.lang.String" value="Get Info"/>
           </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="UPCLookupButtonActionPerformed"/>
+          </Events>
         </Component>
       </SubComponents>
     </Container>

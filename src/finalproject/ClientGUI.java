@@ -1,15 +1,21 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package finalproject;
+// import required client/server components
+import java.net.Socket;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.IOException;
+import java.io.EOFException;
+import java.util.ArrayList;
 
 /**
  *
- * @author david
+ * @author Josh Bodnar, Joe Dister, David Moore, Roger Rado
  */
 public class ClientGUI extends javax.swing.JFrame {
-
+    // declare connection variables to connect to server
+    Socket connection = null;
+    ObjectOutputStream output = null;
+    int UPCCheck = 0;
     /**
      * Creates new form ClientGUI
      */
@@ -28,7 +34,7 @@ public class ClientGUI extends javax.swing.JFrame {
 
         jPanel1 = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
-        jComboBox1 = new javax.swing.JComboBox();
+        UPCComboBox = new javax.swing.JComboBox();
         UPCLookupButton = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
         AddCartButton = new javax.swing.JButton();
@@ -52,9 +58,14 @@ public class ClientGUI extends javax.swing.JFrame {
 
         jLabel2.setText("UPC");
 
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        UPCComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "01234", "12345", "23456", "34567", "45678", "56789" }));
 
         UPCLookupButton.setText("Get Info");
+        UPCLookupButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                UPCLookupButtonActionPerformed(evt);
+            }
+        });
 
         org.jdesktop.layout.GroupLayout jPanel1Layout = new org.jdesktop.layout.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -64,7 +75,7 @@ public class ClientGUI extends javax.swing.JFrame {
                 .addContainerGap()
                 .add(jLabel2)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
-                .add(jComboBox1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 146, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                .add(UPCComboBox, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 146, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(UPCLookupButton)
                 .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -75,7 +86,7 @@ public class ClientGUI extends javax.swing.JFrame {
                 .addContainerGap()
                 .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                     .add(jLabel2)
-                    .add(jComboBox1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                    .add(UPCComboBox, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                     .add(UPCLookupButton))
                 .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
@@ -227,6 +238,26 @@ public class ClientGUI extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_RemoveCartButtonActionPerformed
 
+    private void UPCLookupButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_UPCLookupButtonActionPerformed
+        try {
+            UPCCheck = Integer.valueOf((String)UPCComboBox.getSelectedItem());
+            connection = new Socket("127.0.0.1", 2000);
+            output = new ObjectOutputStream(connection.getOutputStream());
+            output.writeInt(UPCCheck);
+            output.flush();
+            
+        }
+        catch (Exception exception) {
+            
+        }
+        try {
+            //retrieving data from server
+        }
+        catch (Exception exception) {
+            
+        }
+    }//GEN-LAST:event_UPCLookupButtonActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -269,8 +300,8 @@ public class ClientGUI extends javax.swing.JFrame {
     private javax.swing.JButton RemoveCartButton;
     private javax.swing.JTextField TransactionIDTextField;
     private javax.swing.JButton TransactionLookupButton;
+    private javax.swing.JComboBox UPCComboBox;
     private javax.swing.JButton UPCLookupButton;
-    private javax.swing.JComboBox jComboBox1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JList jList1;
