@@ -147,15 +147,18 @@ public class serverClass {
         
         //This switch case will do different things depending on the request recieved
         //This is our defined protocol
-        /*switch(command)
+        switch(requestCommand)
         {
-            
-        }*/
+            case "ProcessUPC": ProcessUPC(); break;
+        } // end switch
         
     }
     public void ProcessUPC() {
+        // 
         try {
-            int UPCLookup = (int) input.readInt();
+            // defines integer to hold integer data sent from client
+            int UPCLookup = (int) input.readInt(); // dmoore57
+            // print the recieved UPC from client
             System.out.println("Recieved UPC:" + UPCLookup);
             if (UPCLookup == 01234) {
                 output.writeChars("UPC 01234 contains item 1");

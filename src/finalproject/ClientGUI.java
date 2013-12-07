@@ -170,7 +170,7 @@ public class ClientGUI extends javax.swing.JFrame {
 
         jLabel2.setText("UPC");
 
-        UPCComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "01234", "12345", "23456", "34567", "45678", "56789" }));
+        UPCComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "11234", "12345", "23456", "34567", "45678", "56789" }));
 
         UPCLookupButton.setText("Get Info");
         UPCLookupButton.addActionListener(new java.awt.event.ActionListener() {
