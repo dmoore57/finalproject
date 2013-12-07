@@ -5,7 +5,10 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.IOException;
 import java.io.EOFException;
+// import arraylist and defaultlistmodel, not sure which would be more beneficial to use
 import java.util.ArrayList;
+import javax.swing.DefaultListModel;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -18,11 +21,16 @@ public class ClientGUI extends javax.swing.JFrame {
     ObjectInputStream input = null;
     // used in upc check
     int UPCCheck = 0;
+    DefaultListModel itemModel = new DefaultListModel();
+    DefaultListModel cartModel = new DefaultListModel();
+    ArrayList <UPCObject> IncomingList = new ArrayList();
+
     /**
      * Creates new form ClientGUI
      */
     public ClientGUI() {
         initComponents();
+        PopulateList();
     }
 
     /**
@@ -39,9 +47,10 @@ public class ClientGUI extends javax.swing.JFrame {
         jScrollPane2 = new javax.swing.JScrollPane();
         ItemsList = new javax.swing.JList();
         jPanel3 = new javax.swing.JPanel();
-        RemoveCartButton = new javax.swing.JButton();
+        EmptyCartButton = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         CartList = new javax.swing.JList();
+        CheckoutButton = new javax.swing.JButton();
         jPanel4 = new javax.swing.JPanel();
         TransactionIDTextField = new javax.swing.JTextField();
         jLabel1 = new javax.swing.JLabel();
@@ -65,12 +74,12 @@ public class ClientGUI extends javax.swing.JFrame {
         jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder("Items"));
 
         AddCartButton.setText("Add to Cart");
-
-        ItemsList.setModel(new javax.swing.AbstractListModel() {
-            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
-            public int getSize() { return strings.length; }
-            public Object getElementAt(int i) { return strings[i]; }
+        AddCartButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                AddCartButtonActionPerformed(evt);
+            }
         });
+
         ItemsList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         jScrollPane2.setViewportView(ItemsList);
 
@@ -79,13 +88,13 @@ public class ClientGUI extends javax.swing.JFrame {
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(jPanel2Layout.createSequentialGroup()
+                .add(85, 85, 85)
+                .add(AddCartButton)
+                .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .add(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
                 .add(jScrollPane2)
                 .addContainerGap())
-            .add(jPanel2Layout.createSequentialGroup()
-                .add(85, 85, 85)
-                .add(AddCartButton)
-                .addContainerGap(87, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
@@ -97,27 +106,30 @@ public class ClientGUI extends javax.swing.JFrame {
 
         jPanel3.setBorder(javax.swing.BorderFactory.createTitledBorder("Cart"));
 
-        RemoveCartButton.setText("Remove from Cart");
-        RemoveCartButton.addActionListener(new java.awt.event.ActionListener() {
+        EmptyCartButton.setText("Empty Cart");
+        EmptyCartButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                RemoveCartButtonActionPerformed(evt);
+                EmptyCartButtonActionPerformed(evt);
             }
         });
 
         CartList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         jScrollPane1.setViewportView(CartList);
 
+        CheckoutButton.setText("Checkout");
+
         org.jdesktop.layout.GroupLayout jPanel3Layout = new org.jdesktop.layout.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
             jPanel3Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(jPanel3Layout.createSequentialGroup()
-                .add(74, 74, 74)
-                .add(RemoveCartButton)
-                .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .add(jPanel3Layout.createSequentialGroup()
                 .addContainerGap()
-                .add(jScrollPane1)
+                .add(jPanel3Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                    .add(jScrollPane1)
+                    .add(jPanel3Layout.createSequentialGroup()
+                        .add(EmptyCartButton)
+                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .add(CheckoutButton)))
                 .addContainerGap())
         );
         jPanel3Layout.setVerticalGroup(
@@ -126,7 +138,9 @@ public class ClientGUI extends javax.swing.JFrame {
                 .add(0, 0, Short.MAX_VALUE)
                 .add(jScrollPane1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 152, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(RemoveCartButton))
+                .add(jPanel3Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                    .add(EmptyCartButton)
+                    .add(CheckoutButton)))
         );
 
         jPanel4.setBorder(javax.swing.BorderFactory.createTitledBorder("Transaction Lookup"));
@@ -246,15 +260,14 @@ public class ClientGUI extends javax.swing.JFrame {
         layout.setHorizontalGroup(
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(layout.createSequentialGroup()
-                .addContainerGap()
+                .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                     .add(jPanel4, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                     .add(jPanel1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING, false)
                     .add(jPanel3, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .add(jPanel2, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .add(jPanel2, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
@@ -272,9 +285,43 @@ public class ClientGUI extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void RemoveCartButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RemoveCartButtonActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_RemoveCartButtonActionPerformed
+    private void PopulateList() {
+        // populate arraylist with test data until we can pull it from the server
+        for (int i = 0; i < 10; i++) {
+            UPCObject tempupcobject = new UPCObject();
+            tempupcobject.SetItemUPC(10000 + i); // dmoore57
+            tempupcobject.SetItemName("Item " + i); // dmoore57
+            tempupcobject.SetItemPrice(10.00 + (double) i); // dmoore57
+            IncomingList.add(tempupcobject);
+        }
+        // loop through the list of items given by the server and populate
+        // the items list on the form
+        for (UPCObject tempupcobject2 : IncomingList) { // dmoore57
+            // declare temp int variable
+            int tempupc = 0; // dmoore57
+            // get item upc from object
+            tempupc = tempupcobject2.GetItemUPC(); // dmoore57
+            // declare temp string variable
+            String tempname = ""; // dmoore57
+            // get item name from object
+            tempname = tempupcobject2.GetItemName(); // dmoore57
+            // declare temp double variable
+            Double tempprice = 0.00; // dmoore57
+            // get item price from object
+            tempprice = tempupcobject2.GetItemPrice(); // dmoore57
+            // take all the data gathered from object and put it into an index on the list
+            itemModel.addElement(Integer.toString(tempupc) + " " + tempname + " " + tempprice.toString()); // dmoore57
+        }
+        // set list to display created model
+        ItemsList.setModel(itemModel); // dmoore57
+    }
+    
+    private void EmptyCartButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_EmptyCartButtonActionPerformed
+        // removes all elements from the list to empty cart
+        cartModel.removeAllElements(); // dmoore57
+        // updates list on form to show that all items have been removed from list
+        CartList.setModel(cartModel); // dmoore57
+    }//GEN-LAST:event_EmptyCartButtonActionPerformed
 
     private void UPCLookupButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_UPCLookupButtonActionPerformed
         try { // dmoore57
@@ -302,7 +349,7 @@ public class ClientGUI extends javax.swing.JFrame {
             ItemPriceTextField.setText(Double.toString(tempupcobject.GetItemPrice())); // dmoore57
         }
         catch (Exception exception) {
-            // exception handling
+            JOptionPane.showMessageDialog(null, "Could not establish connection with server.");
         }
         finally {
             try {
@@ -315,6 +362,13 @@ public class ClientGUI extends javax.swing.JFrame {
             }
         }
     }//GEN-LAST:event_UPCLookupButtonActionPerformed
+
+    private void AddCartButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AddCartButtonActionPerformed
+        // adds elements from the item list to the cart list
+        cartModel.addElement(ItemsList.getSelectedValue()); // dmoore57
+        // updates list on form to show new items added to list
+        CartList.setModel(cartModel); // dmoore57
+    }//GEN-LAST:event_AddCartButtonActionPerformed
 
     /**
      * @param args the command line arguments
@@ -353,12 +407,13 @@ public class ClientGUI extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton AddCartButton;
     private javax.swing.JList CartList;
+    private javax.swing.JButton CheckoutButton;
+    private javax.swing.JButton EmptyCartButton;
     private javax.swing.JTextField ItemNameTextField;
     private javax.swing.JTextField ItemPriceTextField;
     private javax.swing.JTextField ItemUPCTextField;
     private javax.swing.JList ItemsList;
     private javax.swing.JButton RefundButton;
-    private javax.swing.JButton RemoveCartButton;
     private javax.swing.JTextField TransactionIDTextField;
     private javax.swing.JButton TransactionLookupButton;
     private javax.swing.JComboBox UPCComboBox;
