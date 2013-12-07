@@ -15,6 +15,8 @@ public class ClientGUI extends javax.swing.JFrame {
     // declare connection variables to connect to server
     Socket connection = null;
     ObjectOutputStream output = null;
+    ObjectInputStream input = null;
+    // used in upc check
     int UPCCheck = 0;
     /**
      * Creates new form ClientGUI
@@ -51,6 +53,12 @@ public class ClientGUI extends javax.swing.JFrame {
         jLabel2 = new javax.swing.JLabel();
         UPCComboBox = new javax.swing.JComboBox();
         UPCLookupButton = new javax.swing.JButton();
+        ItemUPCTextField = new javax.swing.JTextField();
+        jLabel3 = new javax.swing.JLabel();
+        jLabel4 = new javax.swing.JLabel();
+        ItemNameTextField = new javax.swing.JTextField();
+        jLabel5 = new javax.swing.JLabel();
+        ItemPriceTextField = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -82,7 +90,7 @@ public class ClientGUI extends javax.swing.JFrame {
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(org.jdesktop.layout.GroupLayout.TRAILING, jPanel2Layout.createSequentialGroup()
-                .add(jScrollPane2, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 151, Short.MAX_VALUE)
+                .add(jScrollPane2, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 157, Short.MAX_VALUE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(AddCartButton))
         );
@@ -179,17 +187,35 @@ public class ClientGUI extends javax.swing.JFrame {
             }
         });
 
+        jLabel3.setText("Item UPC");
+
+        jLabel4.setText("Item Name");
+
+        jLabel5.setText("Item Price");
+
         org.jdesktop.layout.GroupLayout jPanel1Layout = new org.jdesktop.layout.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .add(jLabel2)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
-                .add(UPCComboBox, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 146, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(UPCLookupButton)
+                .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                    .add(jPanel1Layout.createSequentialGroup()
+                        .add(jLabel2)
+                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
+                        .add(UPCComboBox, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 146, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                        .add(UPCLookupButton))
+                    .add(org.jdesktop.layout.GroupLayout.TRAILING, jPanel1Layout.createSequentialGroup()
+                        .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                            .add(org.jdesktop.layout.GroupLayout.TRAILING, jLabel5)
+                            .add(org.jdesktop.layout.GroupLayout.TRAILING, jLabel4)
+                            .add(org.jdesktop.layout.GroupLayout.TRAILING, jLabel3))
+                        .add(18, 18, 18)
+                        .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING, false)
+                            .add(ItemUPCTextField, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 175, Short.MAX_VALUE)
+                            .add(ItemNameTextField)
+                            .add(ItemPriceTextField))))
                 .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
@@ -200,6 +226,18 @@ public class ClientGUI extends javax.swing.JFrame {
                     .add(jLabel2)
                     .add(UPCComboBox, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                     .add(UPCLookupButton))
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                    .add(ItemUPCTextField, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                    .add(jLabel3))
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                    .add(jLabel4)
+                    .add(ItemNameTextField, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                .add(6, 6, 6)
+                .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                    .add(jLabel5)
+                    .add(ItemPriceTextField, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -239,33 +277,43 @@ public class ClientGUI extends javax.swing.JFrame {
     }//GEN-LAST:event_RemoveCartButtonActionPerformed
 
     private void UPCLookupButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_UPCLookupButtonActionPerformed
-        try {
-            UPCCheck = Integer.valueOf((String)UPCComboBox.getSelectedItem());
-            connection = new Socket("127.0.0.1", 2000);
-            output = new ObjectOutputStream(connection.getOutputStream());
-            output.writeObject("ProcessUPC");
-            output.writeInt(UPCCheck);
-            output.flush();
-            
+        try { // dmoore57
+            // get the value of the UPC from the combo box on the form
+            UPCCheck = Integer.valueOf((String)UPCComboBox.getSelectedItem()); // dmoore57
+            // create a connection to the server
+            connection = new Socket("127.0.0.1", 2000); // dmoore57
+            // define output stream
+            output = new ObjectOutputStream(connection.getOutputStream()); // dmoore57
+            // tell the server which command we're sending
+            output.writeObject("ProcessUPC"); // dmoore57
+            // send actual UPC data to the server
+            output.writeObject(UPCCheck); // dmoore57
+            // flush output
+            output.flush(); // dmoore57
+            // establish input stream
+            input = new ObjectInputStream(connection.getInputStream()); // dmoore57
+            // make a temporary object to hold object received from the server
+            UPCObject tempupcobject = new UPCObject(); // dmoore57
+            // receive the object from the server and store it in temp object
+            tempupcobject = (UPCObject) input.readObject(); // dmoore57
+            // get information from the object and display it on the form
+            ItemUPCTextField.setText(Integer.toString(tempupcobject.GetItemUPC())); // dmoore57
+            ItemNameTextField.setText(tempupcobject.GetItemName()); // dmoore57
+            ItemPriceTextField.setText(Double.toString(tempupcobject.GetItemPrice())); // dmoore57
         }
         catch (Exception exception) {
-            
+            // exception handling
         }
         finally {
             try {
-                output.close();
-                connection.close();
+                output.close(); // dmoore57
+                input.close(); // dmoore57
+                connection.close(); // dmoore57
             }
             catch (Exception exception) {
                 // exception handling
             }
         }
-        /*try {
-            //retrieving data from server
-        }
-        catch (Exception exception) {
-            
-        }*/
     }//GEN-LAST:event_UPCLookupButtonActionPerformed
 
     /**
@@ -305,6 +353,9 @@ public class ClientGUI extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton AddCartButton;
     private javax.swing.JList CartList;
+    private javax.swing.JTextField ItemNameTextField;
+    private javax.swing.JTextField ItemPriceTextField;
+    private javax.swing.JTextField ItemUPCTextField;
     private javax.swing.JList ItemsList;
     private javax.swing.JButton RefundButton;
     private javax.swing.JButton RemoveCartButton;
@@ -314,6 +365,9 @@ public class ClientGUI extends javax.swing.JFrame {
     private javax.swing.JButton UPCLookupButton;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
     private javax.swing.JList jList1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;

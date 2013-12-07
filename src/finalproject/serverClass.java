@@ -17,7 +17,7 @@ import java.util.ArrayList;
 
 /**
  *
- * @author joe
+ * @author Josh Bodnar, Joe Dister, David Moore, Roger Rado
  */
 public class serverClass {
     //We will need a class for serializable products I think
@@ -143,13 +143,13 @@ public class serverClass {
             System.out.println(e.getMessage());
         }
         //Tells us what command was recieved
-        System.out.println(requestCommand);
+        System.out.println("Received Command: " + requestCommand);
         
         //This switch case will do different things depending on the request recieved
         //This is our defined protocol
         switch(requestCommand)
         {
-            case "ProcessUPC": ProcessUPC(); break;
+            case "ProcessUPC": ProcessUPC(); break; // dmoore57
         } // end switch
         
     }
@@ -157,24 +157,53 @@ public class serverClass {
         // 
         try {
             // defines integer to hold integer data sent from client
-            int UPCLookup = (int) input.readInt(); // dmoore57
-            // print the recieved UPC from client
-            System.out.println("Recieved UPC:" + UPCLookup);
-            if (UPCLookup == 01234) {
-                output.writeChars("UPC 01234 contains item 1");
+            int UPCLookup = (int) input.readObject(); // dmoore57
+            // print the recieved UPC from client on the server console
+            System.out.println("Recieved UPC: " + UPCLookup); // dmoore57
+            // this if/else is only for testing, should be replaced
+            // with actual database handles when ready
+            UPCObject tempupcobject = new UPCObject(); // dmoore57
+            // this object is for testing, realistically this needs to be
+            // pulled out of the database
+            if (UPCLookup == 11234) {
+                tempupcobject.SetItemUPC(UPCLookup);
+                tempupcobject.SetItemName("Item 1");
+                tempupcobject.SetItemPrice(11.11);
+                output.writeObject(tempupcobject);
+                System.out.println("Sent object information for UPC " + UPCLookup + " to client.");
             } else if (UPCLookup == 12345) {
-                output.writeChars("UPC 12345 contains item 2");
+                tempupcobject.SetItemUPC(UPCLookup);
+                tempupcobject.SetItemName("Item 2");
+                tempupcobject.SetItemPrice(22.22);
+                output.writeObject(tempupcobject);
+                System.out.println("Sent object information for UPC " + UPCLookup + " to client.");
             } else if (UPCLookup == 23456) {
-                output.writeChars("UPC 23456 contains item 3");
+                tempupcobject.SetItemUPC(UPCLookup);
+                tempupcobject.SetItemName("Item 3");
+                tempupcobject.SetItemPrice(33.33);
+                output.writeObject(tempupcobject);
+                System.out.println("Sent object information for UPC " + UPCLookup + " to client.");
             } else if (UPCLookup == 34567) {
-                output.writeChars("UPC 34567 contains item 4");
+                tempupcobject.SetItemUPC(UPCLookup);
+                tempupcobject.SetItemName("Item 4");
+                tempupcobject.SetItemPrice(44.44);
+                output.writeObject(tempupcobject);
+                System.out.println("Sent object information for UPC " + UPCLookup + " to client.");
             } else if (UPCLookup == 45678) {
-                output.writeChars("UPC 34567 contains item 5");
+                tempupcobject.SetItemUPC(UPCLookup);
+                tempupcobject.SetItemName("Item 5");
+                tempupcobject.SetItemPrice(55.55);
+                output.writeObject(tempupcobject);
+                System.out.println("Sent object information for UPC " + UPCLookup + " to client.");
             } else if (UPCLookup == 56789) {
-                output.writeChars("UPC 56789 contains item 6");
+                tempupcobject.SetItemUPC(UPCLookup);
+                tempupcobject.SetItemName("Item 6");
+                tempupcobject.SetItemPrice(66.66);
+                output.writeObject(tempupcobject);
+                System.out.println("Sent object information for UPC " + UPCLookup + " to client.");
             }
         }
-        catch (Exception exception) {
+        catch (Exception exception) { // dmoore57
             
         }
     }
