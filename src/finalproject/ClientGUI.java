@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.io.EOFException;
 // import arraylist and defaultlistmodel, not sure which would be more beneficial to use
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.DefaultListModel;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JFrame;
@@ -26,6 +28,7 @@ public class ClientGUI extends javax.swing.JFrame {
     DefaultComboBoxModel upcModel = new DefaultComboBoxModel();
     DefaultListModel itemModel = new DefaultListModel();
     DefaultListModel cartModel = new DefaultListModel();
+    DefaultListModel checkoutModel = new DefaultListModel();
     ArrayList <UPCObject> IncomingList = new ArrayList();
 
     /**
@@ -120,6 +123,11 @@ public class ClientGUI extends javax.swing.JFrame {
         jScrollPane1.setViewportView(CartList);
 
         CheckoutButton.setText("Checkout");
+        CheckoutButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                CheckoutButtonActionPerformed(evt);
+            }
+        });
 
         org.jdesktop.layout.GroupLayout jPanel3Layout = new org.jdesktop.layout.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
@@ -339,7 +347,7 @@ public class ClientGUI extends javax.swing.JFrame {
             // get item price from object
             tempprice = tempupcobject2.GetItemPrice(); // dmoore57
             // take all the data gathered from object and put it into an index on the list and in the upc combo box
-            itemModel.addElement(Integer.toString(tempupc) + " " + tempname + " $" + tempprice.toString()); // dmoore57
+            itemModel.addElement(Integer.toString(tempupc) + " - " + tempname + " - $" + tempprice.toString()); // dmoore57
             upcModel.addElement(Integer.toString(tempupc)); // dmoore57
         }
         // set list and combo box to display created models
@@ -380,7 +388,7 @@ public class ClientGUI extends javax.swing.JFrame {
             ItemPriceTextField.setText(Double.toString(tempupcobject.GetItemPrice())); // dmoore57
         }
         catch (Exception exception) {
-            JOptionPane.showMessageDialog(null, "Could not establish connection with server.");
+            JOptionPane.showMessageDialog(null, "Could not establish connection with server or no object was returned."); // dmoore57
         }
         finally {
             try {
@@ -396,10 +404,57 @@ public class ClientGUI extends javax.swing.JFrame {
 
     private void AddCartButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AddCartButtonActionPerformed
         // adds elements from the item list to the cart list
-        cartModel.addElement(ItemsList.getSelectedValue()); // dmoore57
+        cartModel.addElement((String) ItemsList.getSelectedValue()); // dmoore57
         // updates list on form to show new items added to list
         CartList.setModel(cartModel); // dmoore57
     }//GEN-LAST:event_AddCartButtonActionPerformed
+
+    private void CheckoutButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CheckoutButtonActionPerformed
+        // create new arraylist to send to server with items from cart
+        ArrayList <UPCObject> checkoutArray = new ArrayList(); // dmoore57
+        try {
+            // loop to gather items from inside the cart and add them to array
+            for (int i = 0; i < cartModel.size(); i++) { // dmoore57
+                // declares a temp string and pulls an element from the list
+                String tempstring = (String) cartModel.getElementAt(i); // dmoore57
+                // splits the string at the hyphens into three parts
+                String[] stringparts = tempstring.split(" - "); // dmoore57
+                // creates new temporary object to hold each row
+                UPCObject tempupcobject = new UPCObject(); // dmoore57
+                // set the object's properties
+                tempupcobject.SetItemUPC(Integer.parseInt(stringparts[0])); // dmoore57
+                tempupcobject.SetItemName(stringparts[1]); // dmoore57
+                // this one uses a substring to get rid of the dollar sign
+                tempupcobject.SetItemPrice(Double.parseDouble(stringparts[2].substring(1,6))); // dmoore57
+                // adds the object to the checkout array
+                checkoutArray.add(tempupcobject); // dmoore57
+            }
+            // establishes connection with the server
+            connection = new Socket("127.0.0.1", 2000); // dmoore57
+            output = new ObjectOutputStream(connection.getOutputStream()); // dmoore57
+            // sends command to the server
+            output.writeObject("NewTransaction"); // dmoore57
+            // sends array with transaction information to the server
+            output.writeObject(checkoutArray); // dmoore57
+            output.flush(); // dmoore57
+            
+            // this is where the database handling will go for the new transaction function
+        }
+        catch (Exception exception) {
+            JOptionPane.showMessageDialog(null, "Could not establish connection with server."); // dmoore57
+        }
+        finally {
+            try {
+                // close all connections
+                output.close(); // dmoore57
+                input.close(); // dmoore57
+                connection.close(); // dmoore57
+            } catch (Exception exception) { // dmoore57
+                // exception handling
+            }
+        }
+        
+    }//GEN-LAST:event_CheckoutButtonActionPerformed
 
     /**
      * @param args the command line arguments
@@ -464,4 +519,3 @@ public class ClientGUI extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane3;
     // End of variables declaration//GEN-END:variables
 }
-//Added by Joe to test committing changes

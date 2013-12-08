@@ -13,6 +13,7 @@ import java.io.ObjectOutputStream;
 import java.io.IOException;
 import java.io.EOFException;
 import java.util.ArrayList;
+import java.util.Date;
 
 
 /**
@@ -150,6 +151,7 @@ public class serverClass {
         switch(requestCommand)
         {
             case "ProcessUPC": ProcessUPC(); break; // dmoore57
+            case "NewTransaction": NewTransaction(); break; // dmoore57
         } // end switch
         
     }
@@ -160,11 +162,11 @@ public class serverClass {
             int UPCLookup = (int) input.readObject(); // dmoore57
             // print the recieved UPC from client on the server console
             System.out.println("Recieved UPC: " + UPCLookup); // dmoore57
+            // temporary object to store data in from database to send
+            // back to the client to display
+            UPCObject tempupcobject = new UPCObject(); // dmoore57
             // this if/else is only for testing, should be replaced
             // with actual database handles when ready
-            UPCObject tempupcobject = new UPCObject(); // dmoore57
-            // this object is for testing, realistically this needs to be
-            // pulled out of the database
             if (UPCLookup == 11234) {
                 tempupcobject.SetItemUPC(UPCLookup);
                 tempupcobject.SetItemName("Item 1");
@@ -202,6 +204,19 @@ public class serverClass {
                 output.writeObject(tempupcobject);
                 System.out.println("Sent object information for UPC " + UPCLookup + " to client.");
             }
+        }
+        catch (Exception exception) { // dmoore57
+            
+        }
+    }
+    public void NewTransaction() { // dmoore57
+        try {
+            ArrayList <UPCObject> ReceivedItemArrayList = (ArrayList) input.readObject();
+            System.out.println("Recieved transaction object");
+            for (UPCObject tempobject : ReceivedItemArrayList) {
+                System.out.println("" + tempobject.GetItemUPC() + " " + tempobject.GetItemName() + " $" + tempobject.GetItemPrice());
+            }
+            
         }
         catch (Exception exception) { // dmoore57
             
