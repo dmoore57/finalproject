@@ -273,6 +273,16 @@ public class serverClass {//jdister1
         }
         catch (Exception exception) { // dmoore57
             
+        }        
+        finally {
+            try {
+                // close all connections
+                output.close(); // dmoore57
+                input.close(); // dmoore57
+                connection.close(); // dmoore57
+            } catch (Exception exception) { // dmoore57
+                // exception handling
+            }
         }
     }
     public void TransactionLookup() {
@@ -289,7 +299,16 @@ public class serverClass {//jdister1
         catch (Exception exception) {
             
         }
-        
+        finally {
+            try {
+                // close all connections
+                output.close(); // dmoore57
+                input.close(); // dmoore57
+                connection.close(); // dmoore57
+            } catch (Exception exception) { // dmoore57
+                // exception handling
+            }
+        }
     }
     
 }

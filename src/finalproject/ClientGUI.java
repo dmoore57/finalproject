@@ -514,19 +514,20 @@ public class ClientGUI extends javax.swing.JFrame {
         try {
             // get the transaction ID entered by the user
             transactionid = Integer.parseInt(TransactionIDTextField.getText()); // dmoore57
+            // establish connection
+            connection = new Socket("127.0.0.1", 2000); // dmoore57
+            output = new ObjectOutputStream(connection.getOutputStream()); // dmoore57
+            // send command to the server
+            output.writeObject("TransactionLookup"); // dmoore57
+            // send transaction id to be looked up
+            output.writeObject(transactionid); // dmoore57
+            input = new ObjectInputStream(connection.getInputStream());
+            input.readObject();
         }
         catch (Exception notanumberexception) {
             // exception if anything except numbers are entered in the id box
             JOptionPane.showMessageDialog(null, "Please enter an integer transaction ID."); // dmoore57
-        try {
-            connection = new Socket("127.0.0.1", 2000); // dmoore57
-            output = new ObjectOutputStream(connection.getOutputStream()); // dmoore57
-            output.writeObject("TransactionLookup"); // dmoore57
-            output.writeObject(transactionid); // dmoore57
-        }
-        catch (Exception exception) {
-            // exception handling
-        }
+
     }//GEN-LAST:event_TransactionLookupButtonActionPerformed
     }
     /**
