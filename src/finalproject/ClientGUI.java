@@ -297,6 +297,57 @@ public class ClientGUI extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void PopulateList() {
+       /*
+        //This code can be used to query the server to get an updated list of stores
+        //from the database
+        try{
+            // create a connection to the server
+            connection = new Socket("127.0.0.1", 2000); 
+            //define output stream
+            output = new ObjectOutputStream(connection.getOutputStream()); 
+            // tell the server which command we're sending
+            output.writeObject("SendStores"); 
+            // flush output
+            output.flush(); 
+            // establish input stream
+            input = new ObjectInputStream(connection.getInputStream()); 
+            //We are going to need to recieve an array of stores from the server, Since theere
+            //is no .hasNext() equivalent, we will just read in stores from the server
+            //until we recieved an EOFException
+            try
+            {
+                int storeIncrementer = 0;
+                while(true)
+                {
+                    storelist [storeIncrementer] = input.readObject();
+                    storeIncrementer ++;
+                }
+            }
+            catch (EOFException eof)
+            {
+                //Just means there are no more stores to send over
+            }
+            catch (Exception e)
+            {
+                System.out.println(e.getMessage());
+            }
+            //Proper closing of file input stream
+            try
+            {
+                input.close();
+            }
+            catch(Exception e)
+            {
+                //Does nothin
+            }
+            
+        } 
+        catch (Exception e)
+        {
+            JOptionPane.showMessageDialog(null, "Could not establish connection with server or no object was returned."); // dmoore57
+        }
+        */
+
         // THIS NEEDS TO HAVE SOME EXCEPTION HANDLING
         String[] storelist = { "Store1", "Store2" };
         String selectedstore = "";

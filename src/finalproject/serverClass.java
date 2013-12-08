@@ -20,7 +20,7 @@ import java.util.Date;
  *
  * @author Josh Bodnar, Joe Dister, David Moore, Roger Rado
  */
-public class serverClass {
+public class serverClass {//jdister1
     //We will need a class for serializable products I think
     //private ArrayList<SerializableProduct> AllProducts = new ArrayList<SerializableProduct>();
     
@@ -37,7 +37,7 @@ public class serverClass {
     }
     
     
-    public void loadServer()
+    public void loadServer()//jdister1
     {
         //We will need to query the Database to get an up to date list of our products
         //loadProducts();
@@ -94,7 +94,7 @@ public class serverClass {
         }
     }
 
-    public void waitForClient()
+    public void waitForClient()//jdister1
     {
         System.out.println("Waiting For Connection");
         try
@@ -109,7 +109,7 @@ public class serverClass {
         }
     }    
     
-    public void getDataStreams()
+    public void getDataStreams()//jdister1
     {
         //Open data streams for accepting command from client
         try
@@ -152,9 +152,40 @@ public class serverClass {
         {
             case "ProcessUPC": ProcessUPC(); break; // dmoore57
             case "NewTransaction": NewTransaction(); break; // dmoore57
+            case "SendStores": SendStores(); break;
         } // end switch
         
     }
+    
+    public void SendStores() 
+    {
+        //Queries the database for a list of stores and returns them as an array
+        //NEED DATABASE CODE TO GET STORE NAMES AND PUT THEM IN AN ARRAY
+        //For now using the code David had on the client
+        String[] storelist = { "Store1", "Store2" };
+        for(String store: storelist)
+        {
+            //need proper try catch since we're sending over the network
+            try
+            {
+                output.writeObject(store);
+            }
+            catch (Exception e)
+            {
+                //required error catching
+            }
+        }
+        //Tries to flush the connection we just used
+        try
+        {
+            output.flush();
+        }
+        catch (Exception e)
+        {
+            //Required error catching
+        }
+    }
+    
     public void ProcessUPC() {
         // 
         try {
