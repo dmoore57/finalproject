@@ -249,6 +249,7 @@ public class serverClass {//jdister1
         // declaring variables to hold total and subtotal for transaction
         double subtotal = 0;
         double total = 0;
+        Date currentdate = new Date();
         try {
             // creates a new arraylist to receive data from client
             ArrayList <UPCObject> ReceivedItemArrayList = (ArrayList) input.readObject();
@@ -264,6 +265,7 @@ public class serverClass {//jdister1
             // add in 6% sales tax to calculate grand total
             total = (subtotal * 0.06) + subtotal;
             // print out total and subtotal for the transaction to the system log
+            System.out.println("Transaction date: " + currentdate);
             System.out.println("Number of items sold: " + ReceivedItemArrayList.size());
             System.out.println("Subtotal: $" + subtotal);
             System.out.println("Total: $" + total);
