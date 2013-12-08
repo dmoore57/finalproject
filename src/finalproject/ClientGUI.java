@@ -8,6 +8,8 @@ import java.io.EOFException;
 // import arraylist and defaultlistmodel, not sure which would be more beneficial to use
 import java.util.ArrayList;
 import javax.swing.DefaultListModel;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
 /**
@@ -21,6 +23,7 @@ public class ClientGUI extends javax.swing.JFrame {
     ObjectInputStream input = null;
     // used in upc check
     int UPCCheck = 0;
+    DefaultComboBoxModel upcModel = new DefaultComboBoxModel();
     DefaultListModel itemModel = new DefaultListModel();
     DefaultListModel cartModel = new DefaultListModel();
     ArrayList <UPCObject> IncomingList = new ArrayList();
@@ -286,14 +289,40 @@ public class ClientGUI extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void PopulateList() {
+        // THIS NEEDS TO HAVE SOME EXCEPTION HANDLING
+        String[] storelist = { "Store1", "Store2" };
+        String selectedstore = "";
+        JFrame frame = new JFrame("Store Select");
+        selectedstore = (String) JOptionPane.showInputDialog(frame,
+                "Select a store:",
+                "Store Selection",
+                JOptionPane.QUESTION_MESSAGE,
+                null,
+                storelist,
+                storelist[0]);
+        
+        
         // populate arraylist with test data until we can pull it from the server
-        for (int i = 0; i < 10; i++) {
-            UPCObject tempupcobject = new UPCObject();
-            tempupcobject.SetItemUPC(10000 + i); // dmoore57
-            tempupcobject.SetItemName("Item " + i); // dmoore57
-            tempupcobject.SetItemPrice(10.00 + (double) i); // dmoore57
-            IncomingList.add(tempupcobject);
+        // this is temporary code //////////////////////////////////////////////
+        if (selectedstore == "Store1") {
+            for (int i = 0; i < 10; i++) {
+                UPCObject tempupcobject = new UPCObject();
+                tempupcobject.SetItemUPC(10000 + i); // dmoore57
+                tempupcobject.SetItemName("Store 1 Item " + i); // dmoore57
+                tempupcobject.SetItemPrice(11.11 + (double) i); // dmoore57
+                IncomingList.add(tempupcobject);
+            }
+        } else if (selectedstore == "Store2") {
+            for (int i = 0; i < 10; i++) {
+                UPCObject tempupcobject = new UPCObject();
+                tempupcobject.SetItemUPC(20000 + i); // dmoore57
+                tempupcobject.SetItemName("Store 2 Item " + i); // dmoore57
+                tempupcobject.SetItemPrice(22.22 + (double) i); // dmoore57
+                IncomingList.add(tempupcobject);
+            }
         }
+        // end of temporary code ///////////////////////////////////////////////
+        
         // loop through the list of items given by the server and populate
         // the items list on the form
         for (UPCObject tempupcobject2 : IncomingList) { // dmoore57
@@ -309,11 +338,13 @@ public class ClientGUI extends javax.swing.JFrame {
             Double tempprice = 0.00; // dmoore57
             // get item price from object
             tempprice = tempupcobject2.GetItemPrice(); // dmoore57
-            // take all the data gathered from object and put it into an index on the list
-            itemModel.addElement(Integer.toString(tempupc) + " " + tempname + " " + tempprice.toString()); // dmoore57
+            // take all the data gathered from object and put it into an index on the list and in the upc combo box
+            itemModel.addElement(Integer.toString(tempupc) + " " + tempname + " $" + tempprice.toString()); // dmoore57
+            upcModel.addElement(Integer.toString(tempupc)); // dmoore57
         }
-        // set list to display created model
+        // set list and combo box to display created models
         ItemsList.setModel(itemModel); // dmoore57
+        UPCComboBox.setModel(upcModel); // dmoore57
     }
     
     private void EmptyCartButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_EmptyCartButtonActionPerformed
