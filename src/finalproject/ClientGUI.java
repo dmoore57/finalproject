@@ -14,6 +14,14 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.ResultSetMetaData;
+import org.sqlite.*;
+
 /**
  *
  * @author Josh Bodnar, Joe Dister, David Moore, Roger Rado
@@ -465,48 +473,44 @@ public class ClientGUI extends javax.swing.JFrame {
     }//GEN-LAST:event_AddCartButtonActionPerformed
 
     private void CheckoutButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CheckoutButtonActionPerformed
-        // create new arraylist to send to server with items from cart
-        ArrayList <UPCObject> checkoutArray = new ArrayList(); // dmoore57
-        try {
-            // loop to gather items from inside the cart and add them to array
-            for (int i = 0; i < cartModel.size(); i++) { // dmoore57
-                // declares a temp string and pulls an element from the list
-                String tempstring = (String) cartModel.getElementAt(i); // dmoore57
-                // splits the string at the hyphens into three parts
-                String[] stringparts = tempstring.split(" - "); // dmoore57
-                // creates new temporary object to hold each row
-                UPCObject tempupcobject = new UPCObject(); // dmoore57
-                // set the object's properties
-                tempupcobject.SetItemUPC(Integer.parseInt(stringparts[0])); // dmoore57
-                tempupcobject.SetItemName(stringparts[1]); // dmoore57
-                // this one uses a substring to get rid of the dollar sign
-                tempupcobject.SetItemPrice(Double.parseDouble(stringparts[2].substring(1,6))); // dmoore57
-                // adds the object to the checkout array
-                checkoutArray.add(tempupcobject); // dmoore57
-            }
-            // establishes connection with the server
-            connection = new Socket("127.0.0.1", 2000); // dmoore57
-            output = new ObjectOutputStream(connection.getOutputStream()); // dmoore57
-            // sends command to the server
-            output.writeObject("NewTransaction"); // dmoore57
-            // sends array with transaction information to the server
-            output.writeObject(checkoutArray); // dmoore57
-            output.flush(); // dmoore57
-        }
-        catch (Exception exception) {
-            JOptionPane.showMessageDialog(null, "Could not establish connection with server."); // dmoore57
-        }
-        finally {
-            try {
-                // close all connections
-                output.close(); // dmoore57
-                input.close(); // dmoore57
-                connection.close(); // dmoore57
-            } catch (Exception exception) { // dmoore57
-                // exception handling
-            }
-        }
+        try
+        {
+        // load the SQLite wrapper into the JDBC driver manager
+        // "org.sqlite.JDBC" is the name that must be used
+        Class.forName("org.sqlite.JDBC");
+        } // end try
+        catch (ClassNotFoundException ex)
+        {
+        System.out.println("The SQLite wrapper is not available." + ex.getMessage());
+        } // end catch
         
+        Connection conn = null;
+        try
+        {
+        // create a SQLite wrapper config
+        SQLiteConfig config = new SQLiteConfig();
+        // turn on foreign key constraints
+        config.enforceForeignKeys(true);
+        // create a connection to the mydemo.db file using the jdbc
+        // API and the sqlite driver/wrapper and apply the SQLiteConfig
+        conn = DriverManager.getConnection("jdbc:sqlite:POS.db", config.toProperties());
+        // declare the SQL statement
+        Statement stmt = conn.createStatement();
+        // set a max timeout for the query
+        stmt.setQueryTimeout(30);
+        // drop the table 'Person' if it exists in the database file
+        stmt.executeUpdate("DROP TABLE IF EXISTS People");
+        //creates Stores table
+        stmt.executeUpdate("CREATE TABLE Stores (ID integer PRIMARY KEY, Name longtext)");
+        //creates Transactions table
+        stmt.executeUpdate("CREATE TABLE Transactions (ID integer PRIMARY KEY, SubTotal currency, GrandTotal currency, StoreID integer, FOREIGN KEY(StoreID) REFERENCES Stores(ID))");
+        //creates SalesDetails table
+        stmt.executeUpdate("CREATE TABLE SalesDetails (ID integer PRIMARY KEY, TransactionID integer, Price currency, Date datetime, UPC integer, FOREIGN KEY(TransactionID) REFERENCES Transactions(ID))");
+        }
+        catch (SQLException ex)
+        {
+        System.out.println(ex.getMessage());
+        }
     }//GEN-LAST:event_CheckoutButtonActionPerformed
 
     private void TransactionLookupButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TransactionLookupButtonActionPerformed
