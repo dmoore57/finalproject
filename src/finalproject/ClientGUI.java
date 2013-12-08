@@ -475,8 +475,7 @@ public class ClientGUI extends javax.swing.JFrame {
     private void CheckoutButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CheckoutButtonActionPerformed
         try
         {
-        // load the SQLite wrapper into the JDBC driver manager
-        // "org.sqlite.JDBC" is the name that must be used
+        // loads SQLite wrapper
         Class.forName("org.sqlite.JDBC");
         } // end try
         catch (ClassNotFoundException ex)
@@ -504,8 +503,10 @@ public class ClientGUI extends javax.swing.JFrame {
         stmt.executeUpdate("CREATE TABLE Stores (ID integer PRIMARY KEY, Name longtext)");
         //creates Transactions table
         stmt.executeUpdate("CREATE TABLE Transactions (ID integer PRIMARY KEY, SubTotal currency, GrandTotal currency, StoreID integer, FOREIGN KEY(StoreID) REFERENCES Stores(ID))");
+        //creates Inventory
+        stmt.executeUpdate("CREATE TABLE Inventory (ID integer PRIMARY KEY, UPC integer, ItemName text, CurrentPrice currency)");
         //creates SalesDetails table
-        stmt.executeUpdate("CREATE TABLE SalesDetails (ID integer PRIMARY KEY, TransactionID integer, Price currency, Date datetime, UPC integer, FOREIGN KEY(TransactionID) REFERENCES Transactions(ID))");
+        stmt.executeUpdate("CREATE TABLE SalesDetails (ID integer PRIMARY KEY, TransactionID integer, Price currency, Date datetime, UPC integer, FOREIGN KEY(TransactionID) REFERENCES Transactions(ID), FOREIGN KEY(UPC) REFERENCES Inventory(UPC))");
         }
         catch (SQLException ex)
         {
