@@ -228,10 +228,13 @@ public class serverClass {
             // add in 6% sales tax to calculate grand total
             total = (subtotal * 0.06) + subtotal;
             // print out total and subtotal for the transaction to the system log
+            System.out.println("Number of items sold: " + ReceivedItemArrayList.size());
             System.out.println("Subtotal: $" + subtotal);
             System.out.println("Total: $" + total);
-            // we need to generate a unique transaction ID for each
-            // 
+            // we need to generate a unique ID for each transaction when we
+            // add them to the database. this should ultimately be relayed
+            // back to the user on the client side (at least report total,
+            // subtotal and transaction ID)
         }
         catch (Exception exception) { // dmoore57
             
