@@ -210,13 +210,28 @@ public class serverClass {
         }
     }
     public void NewTransaction() { // dmoore57
+        // declaring variables to hold total and subtotal for transaction
+        double subtotal = 0;
+        double total = 0;
         try {
+            // creates a new arraylist to receive data from client
             ArrayList <UPCObject> ReceivedItemArrayList = (ArrayList) input.readObject();
+            // print that object was received
             System.out.println("Recieved transaction object");
+            // read through the received array list and parse data
             for (UPCObject tempobject : ReceivedItemArrayList) {
+                // print out each received item to the system log
                 System.out.println("" + tempobject.GetItemUPC() + " " + tempobject.GetItemName() + " $" + tempobject.GetItemPrice());
+                // add each item's price to the subtotal
+                subtotal += tempobject.GetItemPrice();
             }
-            
+            // add in 6% sales tax to calculate grand total
+            total = (subtotal * 0.06) + subtotal;
+            // print out total and subtotal for the transaction to the system log
+            System.out.println("Subtotal: $" + subtotal);
+            System.out.println("Total: $" + total);
+            // we need to generate a unique transaction ID for each
+            // 
         }
         catch (Exception exception) { // dmoore57
             

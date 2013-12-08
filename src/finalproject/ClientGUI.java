@@ -437,8 +437,6 @@ public class ClientGUI extends javax.swing.JFrame {
             // sends array with transaction information to the server
             output.writeObject(checkoutArray); // dmoore57
             output.flush(); // dmoore57
-            
-            // this is where the database handling will go for the new transaction function
         }
         catch (Exception exception) {
             JOptionPane.showMessageDialog(null, "Could not establish connection with server."); // dmoore57
