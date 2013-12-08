@@ -159,6 +159,11 @@ public class ClientGUI extends javax.swing.JFrame {
         jLabel1.setText("Transaction ID");
 
         TransactionLookupButton.setText("Find");
+        TransactionLookupButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                TransactionLookupButtonActionPerformed(evt);
+            }
+        });
 
         jList1.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         jScrollPane3.setViewportView(jList1);
@@ -505,6 +510,26 @@ public class ClientGUI extends javax.swing.JFrame {
         
     }//GEN-LAST:event_CheckoutButtonActionPerformed
 
+    private void TransactionLookupButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TransactionLookupButtonActionPerformed
+        int transactionid = 0;
+        try {
+            // get the transaction ID entered by the user
+            transactionid = Integer.parseInt(TransactionIDTextField.getText()); // dmoore57
+        }
+        catch (Exception notanumberexception) {
+            // exception if anything except numbers are entered in the id box
+            JOptionPane.showMessageDialog(null, "Please enter an integer transaction ID."); // dmoore57
+        try {
+            connection = new Socket("127.0.0.1", 2000); // dmoore57
+            output = new ObjectOutputStream(connection.getOutputStream()); // dmoore57
+            output.writeObject("TransactionLookup"); // dmoore57
+            output.writeObject(transactionid); // dmoore57
+        }
+        catch (Exception exception) {
+            // exception handling
+        }
+    }//GEN-LAST:event_TransactionLookupButtonActionPerformed
+    }
     /**
      * @param args the command line arguments
      */

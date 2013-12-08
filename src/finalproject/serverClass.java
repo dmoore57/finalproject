@@ -153,6 +153,7 @@ public class serverClass {//jdister1
             case "ProcessUPC": ProcessUPC(); break; // dmoore57
             case "NewTransaction": NewTransaction(); break; // dmoore57
             case "SendStores": SendStores(); break;
+            case "TransactionLookup": TransactionLookup(); break; // dmoore57
         } // end switch
         
     }
@@ -270,6 +271,20 @@ public class serverClass {//jdister1
         catch (Exception exception) { // dmoore57
             
         }
+    }
+    public void TransactionLookup() {
+        int transactionID = 0;
+        try {
+            transactionID = (int) input.readObject();
+            System.out.println("Received transaction ID " + transactionID + " for lookup.");
+            // pull transaction out of database and put objects for each item
+            // into an arraylist to send back to the client to display on the 
+            // form
+        }
+        catch (Exception exception) {
+            
+        }
+        
     }
     
 }
