@@ -200,6 +200,9 @@ public class serverClass {//jdister1
             UPCObject tempupcobject = new UPCObject(); // dmoore57
             // this if/else is only for testing, should be replaced
             // with actual database handles when ready
+            
+            // select * from inventory where UPC = UPCLookup
+            
             if (UPCLookup == 11234) {
                 tempupcobject.SetItemUPC(UPCLookup);
                 tempupcobject.SetItemName("Item 1");
@@ -271,6 +274,16 @@ public class serverClass {//jdister1
         }
         catch (Exception exception) { // dmoore57
             
+        }        
+        finally {
+            try {
+                // close all connections
+                output.close(); // dmoore57
+                input.close(); // dmoore57
+                connection.close(); // dmoore57
+            } catch (Exception exception) { // dmoore57
+                // exception handling
+            }
         }
     }
     public void TransactionLookup() {
@@ -278,6 +291,8 @@ public class serverClass {//jdister1
         try {
             transactionID = (int) input.readObject();
             System.out.println("Received transaction ID " + transactionID + " for lookup.");
+            // select * from salesdetails where transactionid = transactionID
+            // 
             // pull transaction out of database and put objects for each item
             // into an arraylist to send back to the client to display on the 
             // form
@@ -285,7 +300,16 @@ public class serverClass {//jdister1
         catch (Exception exception) {
             
         }
-        
+        finally {
+            try {
+                // close all connections
+                output.close(); // dmoore57
+                input.close(); // dmoore57
+                connection.close(); // dmoore57
+            } catch (Exception exception) { // dmoore57
+                // exception handling
+            }
+        }
     }
     
 }
