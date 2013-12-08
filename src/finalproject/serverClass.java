@@ -163,7 +163,7 @@ public class serverClass {//jdister1
         //Queries the database for a list of stores and returns them as an array
         //NEED DATABASE CODE TO GET STORE NAMES AND PUT THEM IN AN ARRAY
         //For now using the code David had on the client
-        String[] storelist = { "Store1", "Store2" };
+        String[] storelist = { "Store1", "Store2","Store3" };
         for(String store: storelist)
         {
             //need proper try catch since we're sending over the network

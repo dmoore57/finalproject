@@ -302,7 +302,8 @@ public class ClientGUI extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void PopulateList() {
-       /*
+       /* 
+       ArrayList <String> storelist = new ArrayList(); 
         //This code can be used to query the server to get an updated list of stores
         //from the database
         try{
@@ -324,8 +325,7 @@ public class ClientGUI extends javax.swing.JFrame {
                 int storeIncrementer = 0;
                 while(true)
                 {
-                    storelist [storeIncrementer] = input.readObject();
-                    storeIncrementer ++;
+                    storelist.add((String)input.readObject());
                 }
             }
             catch (EOFException eof)
@@ -351,7 +351,7 @@ public class ClientGUI extends javax.swing.JFrame {
         {
             JOptionPane.showMessageDialog(null, "Could not establish connection with server or no object was returned."); // dmoore57
         }
-        */
+     */   
 
         // THIS NEEDS TO HAVE SOME EXCEPTION HANDLING
         String[] storelist = { "Store1", "Store2" };
@@ -362,9 +362,8 @@ public class ClientGUI extends javax.swing.JFrame {
                 "Store Selection",
                 JOptionPane.QUESTION_MESSAGE,
                 null,
-                storelist,
-                storelist[0]);
-        
+                //storelist.toArray(), storelist.get(0));
+                storelist,storelist[0]);
         
         // populate arraylist with test data until we can pull it from the server
         // this is temporary code //////////////////////////////////////////////
