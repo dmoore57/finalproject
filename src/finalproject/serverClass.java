@@ -310,15 +310,65 @@ public class serverClass {//jdister1
         }
     }
     public void TransactionLookup() {
-        int transactionID = 0;
+        int transactionID = 0; // dmoore57
+        // establish connection variable
+        Connection conn = null; // dmoore57
+        // declare empty arraylist to hold objects to send to client
+        ArrayList <UPCObject> temparraylist = new ArrayList(); // dmoore57
+        // declare empty price object to hold prices to send to client
+        PriceObject tempprice = new PriceObject(); // dmoore57
         try {
-            transactionID = (int) input.readObject();
-            System.out.println("Received transaction ID " + transactionID + " for lookup.");
-            // select * from salesdetails where transactionid = transactionID
-            // 
-            // pull transaction out of database and put objects for each item
-            // into an arraylist to send back to the client to display on the 
-            // form
+            // loads SQLite wrapper
+            Class.forName("org.sqlite.JDBC");
+        }
+        catch (ClassNotFoundException ex) {
+            System.out.println("The SQLite wrapper is not available." + ex.getMessage());
+        }
+        try {
+            // get transaction id sent from client
+            transactionID = (int) input.readObject(); // dmoore57
+            System.out.println("Received transaction ID " + transactionID + " for lookup."); // dmoore57
+            // set up sqlite and connection
+            SQLiteConfig config = new SQLiteConfig();
+            config.enforceForeignKeys(true);
+            conn = DriverManager.getConnection("jdbc:sqlite:POS.db", config.toProperties());
+            // set up sql statement to pull all items from inventory
+            Statement stmt = conn.createStatement();
+            // sql statement to get list of items in a transaction
+            ResultSet rs = stmt.executeQuery("SELECT * FROM SalesDetails WHERE TransactionID = " + transactionID); // dmoore57
+            // loop to iterate through objects pulled from database and puts
+            // them into the arraylist to send back to the client
+            while (rs.next()) { // dmoore57
+                // create a new object each time the loop iterates
+                UPCObject tempupc = new UPCObject(); // dmoore57
+                // pull the data for each field out of the database
+                tempupc.SetItemUPC(rs.getInt("UPC")); // dmoore57
+                tempupc.SetItemPrice(rs.getDouble("Price")); // dmoore57
+                // add the temporary object to the arraylist
+                temparraylist.add(tempupc); // dmoore57
+            }
+            // close result set
+            rs.close(); // dmoore57
+            // new result set to get price data for the transaction            
+            ResultSet rs2 = stmt.executeQuery("SELECT * FROM Transactions WHERE ID = " + transactionID); // dmoore57
+            while (rs2.next()) { // dmoore57
+                // iterate through the one record and add to object
+                tempprice.SetSubtotal(rs2.getDouble("SubTotal")); // dmoore57
+                tempprice.SetTotal(rs2.getDouble("GrandTotal")); // dmoore57
+            }
+            // close result set
+            rs2.close(); // dmoore57
+        }
+        catch (Exception exception) {
+            System.out.println("An error has occurred.");
+        }
+        try {
+            // get ready to send objects back to server
+            output.writeObject((ArrayList) temparraylist); // dmoore57
+            output.writeObject(tempprice); // dmoore57
+            System.out.println("Sent transaction information to client."); // dmoore57
+            // flush output
+            output.flush(); // dmoore57
         }
         catch (Exception exception) {
             
