@@ -17,6 +17,7 @@ import java.util.Date;
 import java.text.SimpleDateFormat;
 
 // imports for SQLite
+import java.sql.*;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -341,13 +342,17 @@ public class serverClass {//jdister1
             System.out.println("The SQLite wrapper is not available." + ex.getMessage());
         } // end catch
         
-        JdbcRowSet rs = new JdbcRowSetImpl();
+        
+        Connection conn = null;
         ArrayList <UPCObject> upcarraylist = new ArrayList();
         try {
-            rs.setUrl("jdbc:sqlite:POS.db");
-            rs.setCommand("SELECT * FROM Inventory");
-            rs.execute();
-            ResultSetMetaData md = rs.getMetaData();
+            SQLiteConfig config = new SQLiteConfig();
+            config.enforceForeignKeys(true);
+            conn = DriverManager.getConnection("jdbc:sqlite:POS.db", config.toProperties());
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery("SELECT * FROM Inventory");
+            //ResultSetMetaData md = rs.getMetaData();
+
             while (rs.next()) {
                 UPCObject tempupc = new UPCObject();
                 tempupc.SetItemUPC(rs.getInt("UPC"));
@@ -360,8 +365,8 @@ public class serverClass {//jdister1
             }
         }
 
-        catch (SQLException exception) {
-            System.out.println(exception.getMessage());
+        catch (Exception exception) {
+            System.out.println("Error has occurred.");
         }
         try {
             output.writeObject(upcarraylist);

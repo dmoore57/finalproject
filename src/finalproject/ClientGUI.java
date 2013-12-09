@@ -44,7 +44,7 @@ public class ClientGUI extends javax.swing.JFrame {
      */
     public ClientGUI() {
         initComponents();
-        //PopulateList();
+        PopulateList();
     }
 
     /**
@@ -485,7 +485,7 @@ public class ClientGUI extends javax.swing.JFrame {
 
     private void AddCartButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AddCartButtonActionPerformed
         // testing 
-        PopulateList();
+
         // adds elements from the item list to the cart list
         //cartModel.addElement((String) ItemsList.getSelectedValue()); // dmoore57
         // updates list on form to show new items added to list
