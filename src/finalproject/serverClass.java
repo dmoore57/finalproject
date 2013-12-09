@@ -176,7 +176,7 @@ public class serverClass {//jdister1
         
     }
     
-    public void SendStores() 
+    public void SendStores() //jdister1
     {
         //Queries the database for a list of stores and returns them as an array
         // query database for list of upc items and compile them into an arraylist
@@ -302,7 +302,7 @@ public class serverClass {//jdister1
             }
         }
     }
-    public void NewTransaction() { 
+    public void NewTransaction() {//jdister1 & jbodnar5 
         int transactionCount = 0;
         int salesDetailCount = 0;
         //Queries the database for a list of stores and returns them as an array
@@ -465,6 +465,7 @@ public class serverClass {//jdister1
             }
         }
     }
+    
     public void TransactionLookup() {
         int transactionID = 0; // dmoore57
         // establish connection variable
