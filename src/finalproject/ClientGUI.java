@@ -37,6 +37,8 @@ public class ClientGUI extends javax.swing.JFrame {
     DefaultListModel itemModel = new DefaultListModel();
     DefaultListModel cartModel = new DefaultListModel();
     DefaultListModel checkoutModel = new DefaultListModel();
+    DefaultListModel transactionModel = new DefaultListModel();
+    DefaultListModel clearModel = new DefaultListModel();
     ArrayList <UPCObject> IncomingList = new ArrayList();
     String selectedstore = "";
     /**
@@ -70,7 +72,7 @@ public class ClientGUI extends javax.swing.JFrame {
         jLabel1 = new javax.swing.JLabel();
         TransactionLookupButton = new javax.swing.JButton();
         jScrollPane3 = new javax.swing.JScrollPane();
-        jList1 = new javax.swing.JList();
+        TransactionList = new javax.swing.JList();
         RefundButton = new javax.swing.JButton();
         jPanel1 = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
@@ -173,8 +175,8 @@ public class ClientGUI extends javax.swing.JFrame {
             }
         });
 
-        jList1.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
-        jScrollPane3.setViewportView(jList1);
+        TransactionList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        jScrollPane3.setViewportView(TransactionList);
 
         RefundButton.setText("Refund Item");
 
@@ -369,6 +371,16 @@ public class ClientGUI extends javax.swing.JFrame {
         catch (Exception exception) {
             // error handling
         }
+        finally {
+            try {
+                // close all connections
+                output.close(); // dmoore57
+                input.close(); // dmoore57
+                connection.close(); // dmoore57
+            } catch (Exception exception) { // dmoore57
+                // exception handling
+            }
+        }
 
         for (UPCObject tempupcobject2 : IncomingList) { // dmoore57
             // declare temp int variable
@@ -380,16 +392,17 @@ public class ClientGUI extends javax.swing.JFrame {
             // get item name from object
             tempname = tempupcobject2.GetItemName(); // dmoore57
             // declare temp double variable
-            Double tempprice = 0.00; // dmoore57
+            double tempprice = 0.00; // dmoore57
             // get item price from object
             tempprice = tempupcobject2.GetItemPrice(); // dmoore57
             // take all the data gathered from object and put it into an index on the list and in the upc combo box
-            itemModel.addElement(Integer.toString(tempupc) + " - " + tempname + " - $" + tempprice.toString()); // dmoore57
+            itemModel.addElement(Integer.toString(tempupc) + " - " + tempname + " - $" + Double.toString(tempprice)); // dmoore57
             upcModel.addElement(Integer.toString(tempupc)); // dmoore57
         }
         // set list and combo box to display created models
         ItemsList.setModel(itemModel); // dmoore57
         UPCComboBox.setModel(upcModel); // dmoore57
+        
     }
     
     private void EmptyCartButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_EmptyCartButtonActionPerformed
@@ -532,6 +545,8 @@ public class ClientGUI extends javax.swing.JFrame {
 
     private void TransactionLookupButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TransactionLookupButtonActionPerformed
         int transactionid = 0;
+        // remove all elements from the list when button is pressed
+        transactionModel.removeAllElements();
         try {
             // get the transaction ID entered by the user
             transactionid = Integer.parseInt(TransactionIDTextField.getText()); // dmoore57
@@ -542,15 +557,45 @@ public class ClientGUI extends javax.swing.JFrame {
             output.writeObject("TransactionLookup"); // dmoore57
             // send transaction id to be looked up
             output.writeObject(transactionid); // dmoore57
-            input = new ObjectInputStream(connection.getInputStream());
-            input.readObject();
-        }
+            // establish input stream
+            input = new ObjectInputStream(connection.getInputStream()); // dmoore57
+            // declare temporary array list for incoming items and add data to it
+            // from server
+            ArrayList <UPCObject> IncomingList = new ArrayList();
+            IncomingList = (ArrayList) input.readObject();
+            for (UPCObject tempupcobject2 : IncomingList) { // dmoore57
+                // declare temp int variable
+                int tempupc = 0; // dmoore57
+                // get item upc from object
+                tempupc = tempupcobject2.GetItemUPC(); // dmoore57
+                // declare temp double variable
+                double tempprice = 0.00; // dmoore57
+                // get item price from object
+                tempprice = tempupcobject2.GetItemPrice(); // dmoore57
+                // take all the data gathered from object and put it into an index on the list
+                transactionModel.addElement(Integer.toString(tempupc) + " - $" + Double.toString(tempprice)); // dmoore57
+            }
+            // get pricing information from server and store it in object
+            PriceObject temporaryprice = new PriceObject(); // dmoore57
+            temporaryprice = (PriceObject) input.readObject(); // dmoore57
+            double tempsubtotal = 0.00; // dmoore57
+            double temptotal = 0.00; // dmoore57
+            // get values from object
+            tempsubtotal = temporaryprice.GetSubtotal(); // dmoore57
+            temptotal = temporaryprice.GetTotal(); // dmoore57
+            // add totals to the list model
+            transactionModel.addElement("Subtotal: $" + Double.toString(tempsubtotal)); // dmoore57
+            transactionModel.addElement("Total (6% tax): $" + Double.toString(temptotal)); // dmoore57
+            // write data to the list
+            TransactionList.setModel(transactionModel); // dmoore57
+            }
+
         catch (Exception notanumberexception) {
             // exception if anything except numbers are entered in the id box
             JOptionPane.showMessageDialog(null, "Please enter an integer transaction ID."); // dmoore57
-
+        }
     }//GEN-LAST:event_TransactionLookupButtonActionPerformed
-    }
+    
     /**
      * @param args the command line arguments
      */
@@ -596,6 +641,7 @@ public class ClientGUI extends javax.swing.JFrame {
     private javax.swing.JList ItemsList;
     private javax.swing.JButton RefundButton;
     private javax.swing.JTextField TransactionIDTextField;
+    private javax.swing.JList TransactionList;
     private javax.swing.JButton TransactionLookupButton;
     private javax.swing.JComboBox UPCComboBox;
     private javax.swing.JButton UPCLookupButton;
@@ -604,7 +650,6 @@ public class ClientGUI extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
-    private javax.swing.JList jList1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
