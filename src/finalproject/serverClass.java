@@ -179,9 +179,48 @@ public class serverClass {//jdister1
     public void SendStores() 
     {
         //Queries the database for a list of stores and returns them as an array
+        // query database for list of upc items and compile them into an arraylist
+        try {
+            // loads SQLite wrapper
+            Class.forName("org.sqlite.JDBC");
+        }
+        catch (ClassNotFoundException ex) {
+            System.out.println("The SQLite wrapper is not available." + ex.getMessage());
+        }
+        // establish connection variable
+        Connection conn = null;
+        //Creates an array of strings to pass back to the client
+        ArrayList <String> storelist = new ArrayList(); 
+        try {
+            // set up sqlite and connection
+            SQLiteConfig config = new SQLiteConfig();
+            config.enforceForeignKeys(true);
+            conn = DriverManager.getConnection("jdbc:sqlite:POS.db", config.toProperties());
+            // set up sql statement to pull all items from inventory
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery("SELECT Name FROM Stores");
+            // loop to iterate through objects pulled from database and puts
+            // them into the arraylist to send back to the client
+            while (rs.next()) {
+                System.out.println(rs.getString("Name"));
+                storelist.add(rs.getString("Name"));
+            }
+        }
+        catch(Exception e)
+        {
+            
+        }
+        try {
+            // sending list of stores back to the client
+            output.writeObject(storelist);
+            System.out.println("Sent store list to client.");
+        }
+        catch (Exception exception) {
+            
+        }
         //NEED DATABASE CODE TO GET STORE NAMES AND PUT THEM IN AN ARRAY
         //For now using the code David had on the client
-        String[] storelist = { "Store1", "Store2","Store3" };
+        //String[] storelist = { "Store1", "Store2","Store3" };
         for(String store: storelist)
         {
             //need proper try catch since we're sending over the network
@@ -263,7 +302,47 @@ public class serverClass {//jdister1
             }
         }
     }
-    public void NewTransaction() { // dmoore57
+    public void NewTransaction() { 
+        int transactionCount = 0;
+        int salesDetailCount = 0;
+        //Queries the database for a list of stores and returns them as an array
+        // query database for list of upc items and compile them into an arraylist
+        try {
+            // loads SQLite wrapper
+            Class.forName("org.sqlite.JDBC");
+        }
+        catch (ClassNotFoundException ex) {
+            System.out.println("The SQLite wrapper is not available." + ex.getMessage());
+        }
+        // establish connection variable
+        Connection conn = null;
+        
+        try {
+            // set up sqlite and connection
+            SQLiteConfig config = new SQLiteConfig();
+            config.enforceForeignKeys(true);
+            conn = DriverManager.getConnection("jdbc:sqlite:POS.db", config.toProperties());
+            // set up sql statement to pull all items from inventory
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery("Select * From Transactions"); 
+            while (rs.next()) {
+                transactionCount++;
+            }
+            transactionCount++;
+            rs.close();   
+            rs = stmt.executeQuery("Select * From SalesDetails");
+            while (rs.next()){
+                salesDetailCount++;
+            }
+            conn.close();
+            System.out.println(transactionCount);
+            System.out.println(salesDetailCount);
+        }
+        catch(Exception e)
+        {
+            System.out.println(e.getMessage());
+        }
+        
         // declaring variables to hold total and subtotal for transaction
         double subtotal = 0;
         double total = 0;
@@ -271,18 +350,57 @@ public class serverClass {//jdister1
         String DateFormat = "MMM dd yyyy HH:mm:ss";
         Date currentdate = new Date();
         SimpleDateFormat sdf = new SimpleDateFormat(DateFormat);
+        
         try {
             // creates a new arraylist to receive data from client
             ArrayList <UPCObject> ReceivedItemArrayList = (ArrayList) input.readObject();
+            //Gets the store name to be used in the transaction 
+            String selectedStore = "";
+            selectedStore = (String) input.readObject();
+            System.out.println(selectedStore);
             // print that object was received
             System.out.println("Recieved transaction object");
-            // read through the received array list and parse data
             for (UPCObject tempobject : ReceivedItemArrayList) {
-                // print out each received item to the system log
-                System.out.println("" + tempobject.GetItemUPC() + " " + tempobject.GetItemName() + " $" + tempobject.GetItemPrice());
-                // add each item's price to the subtotal
-                subtotal += tempobject.GetItemPrice();
+                    // print out each received item to the system log
+                    System.out.println("" + tempobject.GetItemUPC() + " " + tempobject.GetItemName() + " $" + tempobject.GetItemPrice());
+                    // add each item's price to the subtotal
+                    subtotal += tempobject.GetItemPrice();
+                    //Recloses result set
+                }
+            //ESTABLISH ANOTHER CONNECTION HERE
+            try {
+                // loads SQLite wrapper
+                Class.forName("org.sqlite.JDBC");
             }
+            catch (ClassNotFoundException ex) {
+                System.out.println("The SQLite wrapper is not available." + ex.getMessage());
+            }
+            // establish connection variable
+            Connection conn2 = null;
+            try 
+            {
+                // set up sqlite and connection
+                SQLiteConfig config = new SQLiteConfig();
+                //config.enforceForeignKeys(true);
+                conn = DriverManager.getConnection("jdbc:sqlite:POS.db", config.toProperties());
+                // set up sql statement to pull all items from inventory
+                Statement stmt = conn.createStatement();
+                // read through the received array list and parse data
+                for (UPCObject tempobject : ReceivedItemArrayList) {
+                    salesDetailCount++;
+                    //String queryString = "Insert Into Transactions Values(" + Integer.toString(salesDetailCount) + "," + Integer.toString(transactionCount) + "," + Double.toString(tempobject.GetItemPrice())+ "," + (String)sdf.format(currentdate) + "," + Integer.toString(tempobject.GetItemUPC())+ ")";
+                    stmt.executeUpdate("Insert Into SalesDetails Values(" + salesDetailCount + "," + transactionCount + "," + tempobject.GetItemPrice() + ", 'dec 8 2013 18:40:02' ," + tempobject.GetItemUPC()+ ")");
+                }                                   
+                
+            }
+            catch (Exception e)
+            {
+                System.out.println(e.getMessage());
+            }
+            finally{
+                conn.close();
+            }
+            //CODE WAS HERE
             // add in 6% sales tax to calculate grand total
             total = (subtotal * 0.06) + subtotal;
             // print out total and subtotal for the transaction to the system log
@@ -294,6 +412,44 @@ public class serverClass {//jdister1
             // add them to the database. this should ultimately be relayed
             // back to the user on the client side (at least report total,
             // subtotal and transaction ID)
+            
+            //Making the call to the database to add the transaction
+            try {
+                // loads SQLite wrapper
+                Class.forName("org.sqlite.JDBC");
+            }
+            catch (ClassNotFoundException ex) {
+                System.out.println("The SQLite wrapper is not available." + ex.getMessage());
+            }
+            // establish connection variable
+            conn = null;
+            
+            try {
+                // set up sqlite and connection
+                SQLiteConfig config = new SQLiteConfig();
+                //config.enforceForeignKeys(true);
+                conn = DriverManager.getConnection("jdbc:sqlite:POS.db", config.toProperties());
+                // set up sql statement to pull all items from inventory
+                Statement stmt = conn.createStatement();
+                //Secondary statement to get the store ID instead of the store name
+                int storeID = 1;
+                ResultSet rs = stmt.executeQuery("Select ID From Stores Where Name = '" + selectedStore + "'");
+                while (rs.next())
+                {
+                    storeID = rs.getInt("ID");   
+                }
+                System.out.println("LOOK HERE"+  storeID);
+                System.out.println("NOW LOOK HERE" + transactionCount + subtotal + total + storeID);
+                stmt.executeUpdate("Insert Into Transactions Values(" + transactionCount +"," + subtotal + "," + total + "," + storeID + ")" );
+                conn.close();
+            }
+            catch(Exception e)
+            {
+                System.out.println(e.getMessage());
+            }
+       
+            
+            
         }
         catch (Exception exception) { // dmoore57
             // exception handling
