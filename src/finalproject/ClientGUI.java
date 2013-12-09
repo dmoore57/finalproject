@@ -473,7 +473,48 @@ public class ClientGUI extends javax.swing.JFrame {
     }//GEN-LAST:event_AddCartButtonActionPerformed
 
     private void CheckoutButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CheckoutButtonActionPerformed
-        try
+        // create new arraylist to send to server with items from cart
+        ArrayList <UPCObject> checkoutArray = new ArrayList(); // dmoore57
+        try {
+            // loop to gather items from inside the cart and add them to array
+            for (int i = 0; i < cartModel.size(); i++) { // dmoore57
+                // declares a temp string and pulls an element from the list
+                String tempstring = (String) cartModel.getElementAt(i); // dmoore57
+                // splits the string at the hyphens into three parts
+                String[] stringparts = tempstring.split(" - "); // dmoore57
+                // creates new temporary object to hold each row
+                UPCObject tempupcobject = new UPCObject(); // dmoore57
+                // set the object's properties
+                tempupcobject.SetItemUPC(Integer.parseInt(stringparts[0])); // dmoore57
+                tempupcobject.SetItemName(stringparts[1]); // dmoore57
+                // this one uses a substring to get rid of the dollar sign
+                tempupcobject.SetItemPrice(Double.parseDouble(stringparts[2].substring(1,6))); // dmoore57
+                // adds the object to the checkout array
+                checkoutArray.add(tempupcobject); // dmoore57
+            }
+            // establishes connection with the server
+            connection = new Socket("127.0.0.1", 2000); // dmoore57
+            output = new ObjectOutputStream(connection.getOutputStream()); // dmoore57
+            // sends command to the server
+            output.writeObject("NewTransaction"); // dmoore57
+            // sends array with transaction information to the server
+            output.writeObject(checkoutArray); // dmoore57
+            output.flush(); // dmoore57
+        }
+        catch (Exception exception) {
+            JOptionPane.showMessageDialog(null, "Could not establish connection with server."); // dmoore57
+        }
+        finally {
+            try {
+                // close all connections
+                output.close(); // dmoore57
+                input.close(); // dmoore57
+                connection.close(); // dmoore57
+            } catch (Exception exception) { // dmoore57
+                // exception handling
+            }
+        }
+        /*try
         {
         // loads SQLite wrapper
         Class.forName("org.sqlite.JDBC");
@@ -511,7 +552,7 @@ public class ClientGUI extends javax.swing.JFrame {
         catch (SQLException ex)
         {
         System.out.println(ex.getMessage());
-        }
+        }*/
     }//GEN-LAST:event_CheckoutButtonActionPerformed
 
     private void TransactionLookupButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TransactionLookupButtonActionPerformed

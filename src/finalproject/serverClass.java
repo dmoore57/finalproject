@@ -14,6 +14,21 @@ import java.io.IOException;
 import java.io.EOFException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.text.SimpleDateFormat;
+
+// imports for SQLite
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.ResultSetMetaData;
+import org.sqlite.*;
+
+// test
+import javax.sql.rowset.JdbcRowSet;
+import com.sun.rowset.JdbcRowSetImpl;
+import java.sql.SQLException;
 
 
 
@@ -155,6 +170,7 @@ public class serverClass {//jdister1
             case "NewTransaction": NewTransaction(); break; // dmoore57
             case "SendStores": SendStores(); break;
             case "TransactionLookup": TransactionLookup(); break; // dmoore57
+            case "GetUPCList": GetUPCList(); break; // dmoore57
         } // end switch
         
     }
@@ -249,7 +265,9 @@ public class serverClass {//jdister1
         // declaring variables to hold total and subtotal for transaction
         double subtotal = 0;
         double total = 0;
+        String DateFormat = "MMM dd yyyy HH:mm:ss";//yyyy/MM/dd HH:mm:ss";
         Date currentdate = new Date();
+        SimpleDateFormat sdf = new SimpleDateFormat(DateFormat);
         try {
             // creates a new arraylist to receive data from client
             ArrayList <UPCObject> ReceivedItemArrayList = (ArrayList) input.readObject();
@@ -265,7 +283,7 @@ public class serverClass {//jdister1
             // add in 6% sales tax to calculate grand total
             total = (subtotal * 0.06) + subtotal;
             // print out total and subtotal for the transaction to the system log
-            System.out.println("Transaction date: " + currentdate);
+            System.out.println("Transaction date: " + sdf.format(currentdate));
             System.out.println("Number of items sold: " + ReceivedItemArrayList.size());
             System.out.println("Subtotal: $" + subtotal);
             System.out.println("Total: $" + total);
@@ -311,6 +329,37 @@ public class serverClass {//jdister1
             } catch (Exception exception) { // dmoore57
                 // exception handling
             }
+        }
+    }
+    public void GetUPCList() {
+        // query database for list of upc items and compile them into an arraylist
+        try {
+            // loads SQLite wrapper
+            Class.forName("org.sqlite.JDBC");
+        } // end try
+        catch (ClassNotFoundException ex) {
+            System.out.println("The SQLite wrapper is not available." + ex.getMessage());
+        } // end catch
+        Connection conn = null;
+        JdbcRowSet rs = new JdbcRowSetImpl();
+        ArrayList <UPCObject> upcarraylist = new ArrayList();
+        try {
+            rs.setUrl("jdbc:sqlite:POS.db");
+            rs.setCommand("SELECT UPC FROM Inventory");
+            rs.execute();
+            ResultSetMetaData md = rs.getMetaData();
+            while (rs.next()) {
+                for (int i = 1; i <= md.getColumnCount(); i++) {
+                    UPCObject tempupc = new UPCObject();
+                    tempupc.SetItemUPC(Integer.parseInt(rs.getObject(i).toString()));
+                    upcarraylist.add(tempupc);
+                }
+            }
+            output.writeObject(upcarraylist);
+            System.out.println("Sent arraylist to client.");
+        }
+        catch (/*SQLException*/Exception exception) {
+            System.out.println(exception.getMessage());
         }
     }
     
