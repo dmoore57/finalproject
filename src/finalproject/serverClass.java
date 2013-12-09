@@ -179,9 +179,48 @@ public class serverClass {//jdister1
     public void SendStores() 
     {
         //Queries the database for a list of stores and returns them as an array
+        // query database for list of upc items and compile them into an arraylist
+        try {
+            // loads SQLite wrapper
+            Class.forName("org.sqlite.JDBC");
+        }
+        catch (ClassNotFoundException ex) {
+            System.out.println("The SQLite wrapper is not available." + ex.getMessage());
+        }
+        // establish connection variable
+        Connection conn = null;
+        //Creates an array of strings to pass back to the client
+        ArrayList <String> storelist = new ArrayList(); 
+        try {
+            // set up sqlite and connection
+            SQLiteConfig config = new SQLiteConfig();
+            config.enforceForeignKeys(true);
+            conn = DriverManager.getConnection("jdbc:sqlite:POS.db", config.toProperties());
+            // set up sql statement to pull all items from inventory
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery("SELECT Name FROM Stores");
+            // loop to iterate through objects pulled from database and puts
+            // them into the arraylist to send back to the client
+            while (rs.next()) {
+                System.out.println(rs.getString("Name"));
+                storelist.add(rs.getString("Name"));
+            }
+        }
+        catch(Exception e)
+        {
+            
+        }
+        try {
+            // sending list of stores back to the client
+            output.writeObject(storelist);
+            System.out.println("Sent store list to client.");
+        }
+        catch (Exception exception) {
+            
+        }
         //NEED DATABASE CODE TO GET STORE NAMES AND PUT THEM IN AN ARRAY
         //For now using the code David had on the client
-        String[] storelist = { "Store1", "Store2","Store3" };
+        //String[] storelist = { "Store1", "Store2","Store3" };
         for(String store: storelist)
         {
             //need proper try catch since we're sending over the network
