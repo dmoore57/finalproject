@@ -296,7 +296,7 @@ public class serverClass {//jdister1
             // subtotal and transaction ID)
         }
         catch (Exception exception) { // dmoore57
-            
+            // exception handling
         }        
         finally {
             try {
@@ -335,6 +335,7 @@ public class serverClass {//jdister1
         }
     }
     public void GetUPCList() {
+        // this loads all items from the server onto the form
         // query database for list of upc items and compile them into an arraylist
         try {
             // loads SQLite wrapper

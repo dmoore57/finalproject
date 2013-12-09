@@ -383,27 +383,6 @@ public class ClientGUI extends javax.swing.JFrame {
         catch (Exception exception) {
             // error handling
         }
-        // populate arraylist with test data until we can pull it from the server
-        // this is temporary code //////////////////////////////////////////////
-        /*if (selectedstore == "Store1") {
-            for (int i = 0; i < 10; i++) {
-                UPCObject tempupcobject = new UPCObject();
-                tempupcobject.SetItemUPC(10000 + i); // dmoore57
-                tempupcobject.SetItemName("Store 1 Item " + i); // dmoore57
-                tempupcobject.SetItemPrice(11.11 + (double) i); // dmoore57
-                IncomingList.add(tempupcobject);
-            }
-        } else if (selectedstore == "Store2") {
-            for (int i = 0; i < 10; i++) {
-                UPCObject tempupcobject = new UPCObject();
-                tempupcobject.SetItemUPC(20000 + i); // dmoore57
-                tempupcobject.SetItemName("Store 2 Item " + i); // dmoore57
-                tempupcobject.SetItemPrice(22.22 + (double) i); // dmoore57
-                IncomingList.add(tempupcobject);
-            }
-        }*/
-        // end of temporary code ///////////////////////////////////////////////
-        
         // loop through the list of items given by the server and populate
         // the items list on the form
         try {
@@ -484,12 +463,10 @@ public class ClientGUI extends javax.swing.JFrame {
     }//GEN-LAST:event_UPCLookupButtonActionPerformed
 
     private void AddCartButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AddCartButtonActionPerformed
-        // testing 
-
         // adds elements from the item list to the cart list
-        //cartModel.addElement((String) ItemsList.getSelectedValue()); // dmoore57
+        cartModel.addElement((String) ItemsList.getSelectedValue()); // dmoore57
         // updates list on form to show new items added to list
-        //CartList.setModel(cartModel); // dmoore57
+        CartList.setModel(cartModel); // dmoore57
     }//GEN-LAST:event_AddCartButtonActionPerformed
 
     private void CheckoutButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CheckoutButtonActionPerformed
