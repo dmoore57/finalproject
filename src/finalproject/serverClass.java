@@ -340,26 +340,35 @@ public class serverClass {//jdister1
         catch (ClassNotFoundException ex) {
             System.out.println("The SQLite wrapper is not available." + ex.getMessage());
         } // end catch
-        Connection conn = null;
+        
         JdbcRowSet rs = new JdbcRowSetImpl();
         ArrayList <UPCObject> upcarraylist = new ArrayList();
         try {
             rs.setUrl("jdbc:sqlite:POS.db");
-            rs.setCommand("SELECT UPC FROM Inventory");
+            rs.setCommand("SELECT * FROM Inventory");
             rs.execute();
             ResultSetMetaData md = rs.getMetaData();
             while (rs.next()) {
-                for (int i = 1; i <= md.getColumnCount(); i++) {
-                    UPCObject tempupc = new UPCObject();
-                    tempupc.SetItemUPC(Integer.parseInt(rs.getObject(i).toString()));
-                    upcarraylist.add(tempupc);
-                }
+                UPCObject tempupc = new UPCObject();
+                tempupc.SetItemUPC(rs.getInt("UPC"));
+                System.out.println(rs.getInt("UPC"));
+                tempupc.SetItemName(rs.getString("ItemName"));
+                System.out.println(rs.getString("ItemName"));
+                tempupc.SetItemPrice(rs.getDouble("CurrentPrice"));
+                System.out.println(rs.getString("CurrentPrice"));
+                upcarraylist.add(tempupc);
             }
+        }
+
+        catch (SQLException exception) {
+            System.out.println(exception.getMessage());
+        }
+        try {
             output.writeObject(upcarraylist);
             System.out.println("Sent arraylist to client.");
         }
-        catch (/*SQLException*/Exception exception) {
-            System.out.println(exception.getMessage());
+        catch (Exception exception) {
+            
         }
     }
     

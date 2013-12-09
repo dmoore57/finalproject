@@ -44,7 +44,7 @@ public class ClientGUI extends javax.swing.JFrame {
      */
     public ClientGUI() {
         initComponents();
-        PopulateList();
+        //PopulateList();
     }
 
     /**
@@ -276,7 +276,7 @@ public class ClientGUI extends javax.swing.JFrame {
                 .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                     .add(jLabel5)
                     .add(ItemPriceTextField, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(55, Short.MAX_VALUE))
         );
 
         org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(getContentPane());
@@ -362,7 +362,7 @@ public class ClientGUI extends javax.swing.JFrame {
      */   
 
         // THIS NEEDS TO HAVE SOME EXCEPTION HANDLING
-        String[] storelist = { "Store1", "Store2" };
+        /*String[] storelist = { "Store1", "Store2" };
         String selectedstore = "";
         JFrame frame = new JFrame("Store Select");
         selectedstore = (String) JOptionPane.showInputDialog(frame,
@@ -371,11 +371,21 @@ public class ClientGUI extends javax.swing.JFrame {
                 JOptionPane.QUESTION_MESSAGE,
                 null,
                 //storelist.toArray(), storelist.get(0));
-                storelist,storelist[0]);
-        
+                storelist,storelist[0]);*/
+            
+        try {
+            connection = new Socket("127.0.0.1", 2000); // dmoore57
+            // define output stream
+            output = new ObjectOutputStream(connection.getOutputStream()); // dmoore57
+            // tell the server which command we're sending
+            output.writeObject("GetUPCList"); // dmoore57
+        }
+        catch (Exception exception) {
+            // error handling
+        }
         // populate arraylist with test data until we can pull it from the server
         // this is temporary code //////////////////////////////////////////////
-        if (selectedstore == "Store1") {
+        /*if (selectedstore == "Store1") {
             for (int i = 0; i < 10; i++) {
                 UPCObject tempupcobject = new UPCObject();
                 tempupcobject.SetItemUPC(10000 + i); // dmoore57
@@ -391,11 +401,19 @@ public class ClientGUI extends javax.swing.JFrame {
                 tempupcobject.SetItemPrice(22.22 + (double) i); // dmoore57
                 IncomingList.add(tempupcobject);
             }
-        }
+        }*/
         // end of temporary code ///////////////////////////////////////////////
         
         // loop through the list of items given by the server and populate
         // the items list on the form
+        try {
+            input = new ObjectInputStream(connection.getInputStream());
+            IncomingList = (ArrayList) input.readObject();
+        }
+        catch (Exception exception) {
+            // error handling
+        }
+
         for (UPCObject tempupcobject2 : IncomingList) { // dmoore57
             // declare temp int variable
             int tempupc = 0; // dmoore57
@@ -466,10 +484,12 @@ public class ClientGUI extends javax.swing.JFrame {
     }//GEN-LAST:event_UPCLookupButtonActionPerformed
 
     private void AddCartButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AddCartButtonActionPerformed
+        // testing 
+        PopulateList();
         // adds elements from the item list to the cart list
-        cartModel.addElement((String) ItemsList.getSelectedValue()); // dmoore57
+        //cartModel.addElement((String) ItemsList.getSelectedValue()); // dmoore57
         // updates list on form to show new items added to list
-        CartList.setModel(cartModel); // dmoore57
+        //CartList.setModel(cartModel); // dmoore57
     }//GEN-LAST:event_AddCartButtonActionPerformed
 
     private void CheckoutButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CheckoutButtonActionPerformed
