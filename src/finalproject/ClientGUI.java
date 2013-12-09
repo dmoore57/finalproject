@@ -38,7 +38,7 @@ public class ClientGUI extends javax.swing.JFrame {
     DefaultListModel cartModel = new DefaultListModel();
     DefaultListModel checkoutModel = new DefaultListModel();
     ArrayList <UPCObject> IncomingList = new ArrayList();
-
+    String selectedstore = "";
     /**
      * Creates new form ClientGUI
      */
@@ -340,7 +340,7 @@ public class ClientGUI extends javax.swing.JFrame {
 
         // THIS NEEDS TO HAVE SOME EXCEPTION HANDLING
         //String[] storelist = { "Store1", "Store2" };
-        String selectedstore = "";
+        
         JFrame frame = new JFrame("Store Select");
         selectedstore = (String) JOptionPane.showInputDialog(frame,
                 "Select a store:",
@@ -473,6 +473,7 @@ public class ClientGUI extends javax.swing.JFrame {
             output.writeObject("NewTransaction"); // dmoore57
             // sends array with transaction information to the server
             output.writeObject(checkoutArray); // dmoore57
+            output.writeObject(selectedstore);
             output.flush(); // dmoore57
         }
         catch (Exception exception) {
