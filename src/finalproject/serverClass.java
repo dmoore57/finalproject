@@ -337,38 +337,40 @@ public class serverClass {//jdister1
         try {
             // loads SQLite wrapper
             Class.forName("org.sqlite.JDBC");
-        } // end try
+        }
         catch (ClassNotFoundException ex) {
             System.out.println("The SQLite wrapper is not available." + ex.getMessage());
-        } // end catch
-        
-        
+        }
+        // establish connection variable
         Connection conn = null;
+        // declare empty arraylist to hold objects to send to client
         ArrayList <UPCObject> upcarraylist = new ArrayList();
         try {
+            // set up sqlite and connection
             SQLiteConfig config = new SQLiteConfig();
             config.enforceForeignKeys(true);
             conn = DriverManager.getConnection("jdbc:sqlite:POS.db", config.toProperties());
+            // set up sql statement to pull all items from inventory
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery("SELECT * FROM Inventory");
-            //ResultSetMetaData md = rs.getMetaData();
-
+            // loop to iterate through objects pulled from database and puts
+            // them into the arraylist to send back to the client
             while (rs.next()) {
+                // create a new object each time the loop iterates
                 UPCObject tempupc = new UPCObject();
+                // pull the data for each field out of the database
                 tempupc.SetItemUPC(rs.getInt("UPC"));
-                System.out.println(rs.getInt("UPC"));
                 tempupc.SetItemName(rs.getString("ItemName"));
-                System.out.println(rs.getString("ItemName"));
                 tempupc.SetItemPrice(rs.getDouble("CurrentPrice"));
-                System.out.println(rs.getString("CurrentPrice"));
+                // add the temporary object to the arraylist
                 upcarraylist.add(tempupc);
             }
         }
-
         catch (Exception exception) {
-            System.out.println("Error has occurred.");
+            System.out.println("An error has occurred.");
         }
         try {
+            // get ready to send object back to server
             output.writeObject(upcarraylist);
             System.out.println("Sent arraylist to client.");
         }
