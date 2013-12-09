@@ -206,67 +206,69 @@ public class serverClass {//jdister1
     }
     
     public void ProcessUPC() {
-        // 
         try {
+            // loads SQLite wrapper
+            Class.forName("org.sqlite.JDBC");
+        }
+        catch (ClassNotFoundException ex) {
+            System.out.println("The SQLite wrapper is not available." + ex.getMessage());
+        }
+        Connection conn = null;
+        // temporary object to store data in from database to send
+        // back to the client to display
+        try {
+            UPCObject tempupc = new UPCObject(); // dmoore57
             // defines integer to hold integer data sent from client
             int UPCLookup = (int) input.readObject(); // dmoore57
+            // set up sqlite and connection
+            SQLiteConfig config = new SQLiteConfig();
+            config.enforceForeignKeys(true);
+            conn = DriverManager.getConnection("jdbc:sqlite:POS.db", config.toProperties());
+            // set up sql statement to pull all items from inventory
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery("SELECT * FROM Inventory WHERE UPC = " + UPCLookup);
+
+            try {
+
             // print the recieved UPC from client on the server console
             System.out.println("Recieved UPC: " + UPCLookup); // dmoore57
-            // temporary object to store data in from database to send
-            // back to the client to display
-            UPCObject tempupcobject = new UPCObject(); // dmoore57
-            // this if/else is only for testing, should be replaced
-            // with actual database handles when ready
-            
-            // select * from inventory where UPC = UPCLookup
-            
-            if (UPCLookup == 11234) {
-                tempupcobject.SetItemUPC(UPCLookup);
-                tempupcobject.SetItemName("Item 1");
-                tempupcobject.SetItemPrice(11.11);
-                output.writeObject(tempupcobject);
-                System.out.println("Sent object information for UPC " + UPCLookup + " to client.");
-            } else if (UPCLookup == 12345) {
-                tempupcobject.SetItemUPC(UPCLookup);
-                tempupcobject.SetItemName("Item 2");
-                tempupcobject.SetItemPrice(22.22);
-                output.writeObject(tempupcobject);
-                System.out.println("Sent object information for UPC " + UPCLookup + " to client.");
-            } else if (UPCLookup == 23456) {
-                tempupcobject.SetItemUPC(UPCLookup);
-                tempupcobject.SetItemName("Item 3");
-                tempupcobject.SetItemPrice(33.33);
-                output.writeObject(tempupcobject);
-                System.out.println("Sent object information for UPC " + UPCLookup + " to client.");
-            } else if (UPCLookup == 34567) {
-                tempupcobject.SetItemUPC(UPCLookup);
-                tempupcobject.SetItemName("Item 4");
-                tempupcobject.SetItemPrice(44.44);
-                output.writeObject(tempupcobject);
-                System.out.println("Sent object information for UPC " + UPCLookup + " to client.");
-            } else if (UPCLookup == 45678) {
-                tempupcobject.SetItemUPC(UPCLookup);
-                tempupcobject.SetItemName("Item 5");
-                tempupcobject.SetItemPrice(55.55);
-                output.writeObject(tempupcobject);
-                System.out.println("Sent object information for UPC " + UPCLookup + " to client.");
-            } else if (UPCLookup == 56789) {
-                tempupcobject.SetItemUPC(UPCLookup);
-                tempupcobject.SetItemName("Item 6");
-                tempupcobject.SetItemPrice(66.66);
-                output.writeObject(tempupcobject);
-                System.out.println("Sent object information for UPC " + UPCLookup + " to client.");
+
+            // loop to iterate through objects pulled from database and puts
+            // them into the arraylist to send back to the client
+            // pull the data for each field out of the database
+            tempupc.SetItemUPC(rs.getInt("UPC"));
+            tempupc.SetItemName(rs.getString("ItemName"));
+            tempupc.SetItemPrice(rs.getDouble("CurrentPrice"));
+            // get ready to send object back to server
+            output.writeObject(tempupc);
+            output.flush();
+            System.out.println("Sent item information to client.");
+            rs.close();
+            }
+            catch (Exception exception) {
+                
             }
         }
-        catch (Exception exception) { // dmoore57
-            
+        catch (Exception exception) {
+            System.out.println("An error has occurred.");
+        }
+        finally {
+            try {
+                // close all connections
+                output.close(); // dmoore57
+                input.close(); // dmoore57
+                connection.close(); // dmoore57
+            } catch (Exception exception) { // dmoore57
+                // exception handling
+            }
         }
     }
     public void NewTransaction() { // dmoore57
         // declaring variables to hold total and subtotal for transaction
         double subtotal = 0;
         double total = 0;
-        String DateFormat = "MMM dd yyyy HH:mm:ss";//yyyy/MM/dd HH:mm:ss";
+        // change date format so that it matches what the database creates
+        String DateFormat = "MMM dd yyyy HH:mm:ss";
         Date currentdate = new Date();
         SimpleDateFormat sdf = new SimpleDateFormat(DateFormat);
         try {
@@ -365,6 +367,7 @@ public class serverClass {//jdister1
                 // add the temporary object to the arraylist
                 upcarraylist.add(tempupc);
             }
+            rs.close();
         }
         catch (Exception exception) {
             System.out.println("An error has occurred.");
@@ -372,10 +375,21 @@ public class serverClass {//jdister1
         try {
             // get ready to send object back to server
             output.writeObject(upcarraylist);
-            System.out.println("Sent arraylist to client.");
+            System.out.println("Sent item information to client.");
+            output.flush();
         }
         catch (Exception exception) {
             
+        }
+        finally {
+            try {
+                // close all connections
+                output.close(); // dmoore57
+                input.close(); // dmoore57
+                connection.close(); // dmoore57
+            } catch (Exception exception) { // dmoore57
+                // exception handling
+            }
         }
     }
     
